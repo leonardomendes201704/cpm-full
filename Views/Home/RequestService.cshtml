@@ -1,0 +1,120 @@
+@model RequestServicePageViewModel
+@{
+    ViewData["Title"] = "Solicitar servico";
+    ViewData["SeoTitle"] = "Solicitar servico residencial";
+    ViewData["MetaDescription"] = "Descreva o servico desejado, informe seu CEP e receba contatos de profissionais da sua regiao.";
+    ViewData["MetaKeywords"] = "solicitar servico, orcamento, manutencao residencial, CEP, profissionais";
+    ViewData["CanonicalPath"] = "/solicitar-servico";
+    ViewData["OgImage"] = Url.Content("~/images/7237a130-fa5b-4e98-9118-ed5b0d465fa6.png");
+}
+
+<section class="cpm-section">
+    <div class="container-lg cpm-form-wrap">
+        <div class="text-center mb-4">
+            <h1 class="fw-bold">Solicitar servico</h1>
+            <p class="text-secondary-emphasis mb-0">Preencha os dados para receber contatos de profissionais da sua regiao.</p>
+        </div>
+
+        @if (Model.IsSubmitted)
+        {
+            <div class="alert alert-success d-flex align-items-center gap-2" role="alert">
+                <i class="bi bi-check-circle-fill"></i>
+                <span>Pedido enviado com sucesso. Em breve voce recebera contatos por telefone ou WhatsApp.</span>
+            </div>
+        }
+
+        <div class="cpm-card cpm-form-card p-4 p-md-5 bg-white">
+            <form asp-controller="Home" asp-action="RequestService" method="post" novalidate>
+                @Html.AntiForgeryToken()
+                <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
+
+                <div class="mb-3">
+                    <label asp-for="Form.CategoryId" class="form-label">Categoria</label>
+                    <select id="Form_CategoryId" name="Form.CategoryId" class="form-select">
+                        <option value="">Selecione</option>
+                        @foreach (var category in Model.Categories)
+                        {
+                            <option value="@category.Id" selected="@(category.Id == Model.Form.CategoryId ? "selected" : null)">
+                                @category.Name
+                            </option>
+                        }
+                    </select>
+                    <span asp-validation-for="Form.CategoryId" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Form.Description" class="form-label">Descricao do problema</label>
+                    <textarea asp-for="Form.Description" class="form-control" rows="5" placeholder="Ex: A torneira da cozinha esta vazando na base."></textarea>
+                    <span asp-validation-for="Form.Description" class="text-danger small"></span>
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-12 col-md-6">
+                        <label asp-for="Form.Location" class="form-label">Cidade / Bairro</label>
+                        <input asp-for="Form.Location" class="form-control" placeholder="Ex: Sao Paulo - Pinheiros" />
+                        <span asp-validation-for="Form.Location" class="text-danger small"></span>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <label asp-for="Form.Name" class="form-label">Nome completo</label>
+                        <input asp-for="Form.Name" class="form-control" placeholder="Seu nome" />
+                        <span asp-validation-for="Form.Name" class="text-danger small"></span>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <label asp-for="Form.Phone" class="form-label">Telefone / Celular</label>
+                        <input asp-for="Form.Phone" class="form-control" placeholder="(00) 00000-0000" />
+                        <span asp-validation-for="Form.Phone" class="text-danger small"></span>
+                    </div>
+                    <div class="col-12 col-md-6 d-flex align-items-center">
+                        <div class="form-check mt-4">
+                            <input asp-for="Form.IsWhatsapp" class="form-check-input" />
+                            <label asp-for="Form.IsWhatsapp" class="form-check-label">Este numero e WhatsApp</label>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn cpm-btn-primary w-100 mt-4">Receber orcamentos</button>
+                <p class="text-center text-secondary-emphasis small mt-3 mb-0">
+                    Ao enviar, voce concorda com os termos de uso e politica de privacidade.
+                </p>
+            </form>
+        </div>
+    </div>
+</section>
+
+@section Head {
+    @{
+        var baseUrl = $"{Context.Request.Scheme}://{Context.Request.Host}";
+        var serviceCatalog = Model.Categories.Select(category => category.Name).ToArray();
+        var structuredData = new object[]
+        {
+            new Dictionary<string, object?>
+            {
+                ["@context"] = "https://schema.org",
+                ["@type"] = "WebPage",
+                ["name"] = "Solicitar servico",
+                ["url"] = $"{baseUrl}/solicitar-servico",
+                ["description"] = "Formulario para solicitar atendimento residencial com profissionais proximos.",
+                ["inLanguage"] = "pt-BR"
+            },
+            new Dictionary<string, object?>
+            {
+                ["@context"] = "https://schema.org",
+                ["@type"] = "Service",
+                ["name"] = "Intermediacao de servicos residenciais",
+                ["serviceType"] = serviceCatalog,
+                ["provider"] = new Dictionary<string, object?>
+                {
+                    ["@type"] = "Organization",
+                    ["name"] = "ConsertaPraMim",
+                    ["url"] = baseUrl
+                },
+                ["areaServed"] = "Brasil"
+            }
+        };
+    }
+    <script type="application/ld+json">@Html.Raw(System.Text.Json.JsonSerializer.Serialize(structuredData))</script>
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

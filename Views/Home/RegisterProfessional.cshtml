@@ -1,0 +1,229 @@
+@model RegisterProfessionalPageViewModel
+@{
+    ViewData["Title"] = "Cadastro profissional";
+    ViewData["SeoTitle"] = "Cadastro de profissional";
+    ViewData["MetaDescription"] = "Cadastre-se como profissional no ConsertaPraMim para receber pedidos de servicos residenciais na sua regiao.";
+    ViewData["MetaKeywords"] = "cadastro profissional, prestador de servico, receber clientes, servicos residenciais";
+    ViewData["CanonicalPath"] = "/cadastro-profissional";
+    ViewData["OgImage"] = Url.Content("~/images/7237a130-fa5b-4e98-9118-ed5b0d465fa6.png");
+}
+
+<section class="cpm-section">
+    <div class="container-lg cpm-form-wrap">
+        <div class="text-center mb-4">
+            <h1 class="fw-bold">Ganhe clientes com o ConsertaPraMim</h1>
+            <p class="text-secondary-emphasis mb-0">Cadastre-se gratuitamente e receba pedidos na sua regiao.</p>
+        </div>
+
+        @if (Model.IsSubmitted)
+        {
+            <div class="alert alert-success d-flex align-items-center gap-2" role="alert">
+                <i class="bi bi-check-circle-fill"></i>
+                <span>Cadastro recebido. Nossa equipe fara contato em ate 48 horas.</span>
+            </div>
+        }
+
+        <div class="cpm-card cpm-form-card p-4 p-md-5 bg-white">
+            <form asp-controller="Home" asp-action="RegisterProfessional" method="post" novalidate>
+                @Html.AntiForgeryToken()
+                <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
+
+                <div class="cpm-file-placeholder mb-4">
+                    <i class="bi bi-upload fs-2"></i>
+                    <div class="fw-semibold mt-2">Adicionar foto de perfil</div>
+                    <div class="small">PNG ou JPG ate 5MB</div>
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-12">
+                        <label asp-for="Form.Name" class="form-label">Nome completo</label>
+                        <input asp-for="Form.Name" class="form-control" placeholder="Seu nome" />
+                        <span asp-validation-for="Form.Name" class="text-danger small"></span>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <label asp-for="Form.Profession" class="form-label">Profissao principal</label>
+                        <input
+                            asp-for="Form.Profession"
+                            class="form-control"
+                            placeholder="Pesquise e selecione sua profissao"
+                            list="professionOptions"
+                            autocomplete="off" />
+                        <datalist id="professionOptions">
+                            @foreach (var profession in Model.ProfessionOptions)
+                            {
+                                <option value="@profession"></option>
+                            }
+                        </datalist>
+                        <div class="form-text">Digite para pesquisar na lista de profissoes.</div>
+                        <span asp-validation-for="Form.Profession" class="text-danger small"></span>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <label asp-for="Form.PostalCode" class="form-label">CEP</label>
+                        <input
+                            asp-for="Form.PostalCode"
+                            class="form-control"
+                            placeholder="00000-000"
+                            inputmode="numeric"
+                            autocomplete="postal-code"
+                            maxlength="9" />
+                        <span asp-validation-for="Form.PostalCode" class="text-danger small"></span>
+                        <div id="professionalCepFeedback" class="cpm-cep-feedback d-none"></div>
+                    </div>
+                    <div class="col-12">
+                        <label asp-for="Form.Services" class="form-label">Servicos realizados</label>
+                        <input asp-for="Form.Services" class="form-control" placeholder="Ex: Instalacao eletrica, reparos gerais" />
+                        <span asp-validation-for="Form.Services" class="text-danger small"></span>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <label asp-for="Form.Phone" class="form-label">Telefone / Celular</label>
+                        <input
+                            asp-for="Form.Phone"
+                            class="form-control"
+                            placeholder="(00) 90000-0000"
+                            inputmode="numeric"
+                            autocomplete="tel"
+                            maxlength="15" />
+                        <span asp-validation-for="Form.Phone" class="text-danger small"></span>
+                    </div>
+                    <div class="col-12 col-md-6 d-flex align-items-center">
+                        <div class="form-check mt-4">
+                            <input asp-for="Form.IsWhatsapp" class="form-check-input" />
+                            <label asp-for="Form.IsWhatsapp" class="form-check-label">Este numero e WhatsApp</label>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <label asp-for="Form.Experience" class="form-label">Resumo da experiencia</label>
+                        <textarea asp-for="Form.Experience" class="form-control" rows="4" placeholder="Conte sobre sua experiencia e tempo de atuacao."></textarea>
+                        <span asp-validation-for="Form.Experience" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn cpm-btn-primary w-100 mt-4">Quero receber mais clientes</button>
+                <p class="text-center text-secondary-emphasis small mt-3 mb-0">
+                    Ao se cadastrar, voce concorda com os
+                    <a
+                        class="text-decoration-underline fw-semibold"
+                        asp-controller="Home"
+                        asp-action="ProfessionalTerms"
+                        target="_blank"
+                        rel="noopener noreferrer">
+                        termos de uso para profissionais
+                    </a>.
+                </p>
+            </form>
+        </div>
+    </div>
+</section>
+
+@section Head {
+    @{
+        var baseUrl = $"{Context.Request.Scheme}://{Context.Request.Host}";
+        var structuredData = new object[]
+        {
+            new Dictionary<string, object?>
+            {
+                ["@context"] = "https://schema.org",
+                ["@type"] = "WebPage",
+                ["name"] = "Cadastro de profissional",
+                ["url"] = $"{baseUrl}/cadastro-profissional",
+                ["description"] = "Pagina de cadastro para prestadores de servicos da plataforma ConsertaPraMim.",
+                ["inLanguage"] = "pt-BR"
+            }
+        };
+    }
+    <script type="application/ld+json">@Html.Raw(System.Text.Json.JsonSerializer.Serialize(structuredData))</script>
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        (() => {
+            const postalCodeInput = document.getElementById("Form_PostalCode");
+            const postalCodeFeedback = document.getElementById("professionalCepFeedback");
+            const phoneInput = document.getElementById("Form_Phone");
+            const professionInput = document.getElementById("Form_Profession");
+            const professionOptions = new Set(
+                Array.from(document.querySelectorAll("#professionOptions option"))
+                    .map((option) => option.value.trim().toLowerCase())
+            );
+
+            const onlyDigits = (value) => value.replace(/\D/g, "");
+            const allowOnlyNumericKeys = (input) => {
+                if (!input) {
+                    return;
+                }
+
+                input.addEventListener("keydown", (event) => {
+                    const allowedKeys = ["Backspace", "Delete", "ArrowLeft", "ArrowRight", "Tab", "Home", "End"];
+                    if (allowedKeys.includes(event.key) || event.ctrlKey || event.metaKey) {
+                        return;
+                    }
+
+                    if (!/^\d$/.test(event.key)) {
+                        event.preventDefault();
+                    }
+                });
+            };
+
+            const formatPhone = (value) => {
+                const digits = onlyDigits(value).slice(0, 11);
+                if (!digits) {
+                    return "";
+                }
+
+                if (digits.length <= 2) {
+                    return `(${digits}`;
+                }
+
+                if (digits.length <= 7) {
+                    return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+                }
+
+                return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
+            };
+
+            if (postalCodeInput && postalCodeFeedback && window.CepResolver) {
+                window.CepResolver.bindCepLookup({
+                    input: postalCodeInput,
+                    feedback: postalCodeFeedback,
+                    messages: {
+                        loading: "Consultando CEP...",
+                        resolved: (addressText) => `Endereco encontrado: ${addressText}`,
+                        unresolved: "Nao foi possivel resolver rua, bairro, cidade e UF. O CEP digitado sera aceito."
+                    }
+                });
+            }
+
+            if (phoneInput) {
+                phoneInput.addEventListener("input", () => {
+                    phoneInput.value = formatPhone(phoneInput.value);
+                });
+            }
+
+            allowOnlyNumericKeys(phoneInput);
+
+            if (professionInput) {
+                const validateProfession = () => {
+                    const selected = professionInput.value.trim();
+                    if (!selected) {
+                        professionInput.setCustomValidity("");
+                        return;
+                    }
+
+                    if (!professionOptions.has(selected.toLowerCase())) {
+                        professionInput.setCustomValidity("Selecione uma profissao valida da lista.");
+                        return;
+                    }
+
+                    professionInput.setCustomValidity("");
+                };
+
+                professionInput.addEventListener("input", () => {
+                    professionInput.setCustomValidity("");
+                });
+                professionInput.addEventListener("change", validateProfession);
+                professionInput.addEventListener("blur", validateProfession);
+            }
+        })();
+    </script>
+}

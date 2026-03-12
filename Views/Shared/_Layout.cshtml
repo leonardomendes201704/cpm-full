@@ -1,0 +1,209 @@
+@using System.Text.Json
+@{
+    const string siteName = "ConsertaPraMim";
+    const string defaultDescription = "ConsertaPraMim conecta voce a profissionais para servicos de eletrica, hidraulica, reformas, pintura e manutencao residencial.";
+    const string defaultKeywords = "conserto residencial, manutencao casa, eletricista, encanador, pedreiro, pintor, reformas";
+    const string defaultRobots = "index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1";
+
+    var title = ViewData["Title"]?.ToString();
+    var seoTitle = ViewData["SeoTitle"]?.ToString();
+    var displayTitle = string.IsNullOrWhiteSpace(seoTitle)
+        ? (string.IsNullOrWhiteSpace(title) ? siteName : title)
+        : seoTitle;
+    var fullTitle = displayTitle.Contains(siteName, StringComparison.OrdinalIgnoreCase)
+        ? displayTitle
+        : $"{displayTitle} | {siteName}";
+
+    var metaDescription = ViewData["MetaDescription"]?.ToString();
+    if (string.IsNullOrWhiteSpace(metaDescription))
+    {
+        metaDescription = defaultDescription;
+    }
+
+    var metaKeywords = ViewData["MetaKeywords"]?.ToString();
+    if (string.IsNullOrWhiteSpace(metaKeywords))
+    {
+        metaKeywords = defaultKeywords;
+    }
+
+    var robots = ViewData["Robots"]?.ToString();
+    if (string.IsNullOrWhiteSpace(robots))
+    {
+        robots = defaultRobots;
+    }
+
+    var canonicalPath = ViewData["CanonicalPath"]?.ToString();
+    if (string.IsNullOrWhiteSpace(canonicalPath))
+    {
+        canonicalPath = Context.Request.Path.HasValue ? Context.Request.Path.Value! : "/";
+    }
+
+    if (!canonicalPath.StartsWith('/'))
+    {
+        canonicalPath = $"/{canonicalPath}";
+    }
+
+    var baseUrl = $"{Context.Request.Scheme}://{Context.Request.Host}{Context.Request.PathBase}";
+    var canonicalUrl = $"{baseUrl}{canonicalPath}";
+
+    var ogImageInput = ViewData["OgImage"]?.ToString();
+    if (string.IsNullOrWhiteSpace(ogImageInput))
+    {
+        ogImageInput = Url.Content("~/images/7237a130-fa5b-4e98-9118-ed5b0d465fa6.png");
+    }
+
+    var ogImageUrl = ogImageInput.StartsWith("http", StringComparison.OrdinalIgnoreCase)
+        ? ogImageInput
+        : $"{baseUrl}{ogImageInput}";
+
+    var organizationSchema = new Dictionary<string, object?>
+    {
+        ["@context"] = "https://schema.org",
+        ["@type"] = "LocalBusiness",
+        ["name"] = siteName,
+        ["url"] = baseUrl,
+        ["logo"] = $"{baseUrl}{Url.Content("~/images/logo-top-bar-consertapramim.png")}",
+        ["image"] = ogImageUrl,
+        ["description"] = defaultDescription,
+        ["areaServed"] = "Brasil",
+        ["serviceType"] = "Intermediacao de servicos residenciais"
+    };
+
+    var websiteSchema = new Dictionary<string, object?>
+    {
+        ["@context"] = "https://schema.org",
+        ["@type"] = "WebSite",
+        ["name"] = siteName,
+        ["url"] = baseUrl,
+        ["inLanguage"] = "pt-BR",
+        ["potentialAction"] = new Dictionary<string, object?>
+        {
+            ["@type"] = "SearchAction",
+            ["target"] = $"{baseUrl}/profissionais?searchTerm={{search_term_string}}",
+            ["query-input"] = "required name=search_term_string"
+        }
+    };
+
+    var globalStructuredDataJson = JsonSerializer.Serialize(new object[] { organizationSchema, websiteSchema });
+}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@fullTitle</title>
+    <meta name="description" content="@metaDescription" />
+    <meta name="keywords" content="@metaKeywords" />
+    <meta name="robots" content="@robots" />
+    <meta name="author" content="ConsertaPraMim" />
+    <meta name="theme-color" content="#ff7a00" />
+    <link rel="canonical" href="@canonicalUrl" />
+    <link rel="alternate" hreflang="pt-BR" href="@canonicalUrl" />
+    <link rel="alternate" hreflang="x-default" href="@canonicalUrl" />
+    <meta property="og:locale" content="pt_BR" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="@siteName" />
+    <meta property="og:title" content="@fullTitle" />
+    <meta property="og:description" content="@metaDescription" />
+    <meta property="og:url" content="@canonicalUrl" />
+    <meta property="og:image" content="@ogImageUrl" />
+    <meta property="og:image:alt" content="ConsertaPraMim" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="@fullTitle" />
+    <meta name="twitter:description" content="@metaDescription" />
+    <meta name="twitter:image" content="@ogImageUrl" />
+    <link rel="icon" type="image/png" href="~/images/logo-top-bar-consertapramim.png" asp-append-version="true" />
+    <link rel="apple-touch-icon" href="~/images/logo-top-bar-consertapramim.png" asp-append-version="true" />
+    <link rel="sitemap" type="application/xml" href="~/sitemap.xml" />
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    @RenderSection("Head", required: false)
+    <script type="application/ld+json">@Html.Raw(globalStructuredDataJson)</script>
+</head>
+<body class="cpm-body">
+    <header class="sticky-top cpm-header">
+        <nav class="navbar navbar-expand-lg">
+            <div class="container-lg">
+                <a class="navbar-brand" asp-controller="Home" asp-action="Index">
+                    <img src="~/images/logo-top-bar-consertapramim.png" alt="ConsertaPraMim" class="cpm-logo" />
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#cpmNav" aria-controls="cpmNav" aria-expanded="false" aria-label="Alternar menu">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="cpmNav">
+                    <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-3">
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Home" asp-action="Index">Como funciona</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Home" asp-action="Professionals">Profissionais</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Home" asp-action="Support">Suporte</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="btn btn-outline-primary cpm-btn-outline" asp-controller="Home" asp-action="RegisterProfessional">Sou Profissional</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main role="main" class="cpm-main">
+        @RenderBody()
+    </main>
+
+    <footer class="cpm-footer">
+        <div class="container-lg py-5">
+            <div class="row g-4">
+                <div class="col-12 col-md-4">
+                    <a asp-controller="Home" asp-action="Index" class="d-inline-block mb-3">
+                        <img src="~/images/logo-top-bar-consertapramim.png" alt="ConsertaPraMim" class="cpm-logo-footer" />
+                    </a>
+                    <p class="mb-0 text-light-emphasis">
+                        Conectando clientes a profissionais verificados para resolver problemas da casa de forma rapida e segura.
+                    </p>
+                </div>
+                <div class="col-6 col-md-2">
+                    <h6>Plataforma</h6>
+                    <ul class="list-unstyled">
+                        <li><a asp-controller="Home" asp-action="Index">Sobre</a></li>
+                        <li><a asp-controller="Home" asp-action="Index">Como funciona</a></li>
+                        <li><a asp-controller="Home" asp-action="Professionals">Profissionais</a></li>
+                    </ul>
+                </div>
+                <div class="col-6 col-md-3">
+                    <h6>Profissionais</h6>
+                    <ul class="list-unstyled">
+                        <li><a asp-controller="Home" asp-action="RegisterProfessional">Cadastre-se</a></li>
+                        <li><a asp-controller="Home" asp-action="RegisterProfessional">Planos</a></li>
+                    </ul>
+                </div>
+                <div class="col-12 col-md-3">
+                    <h6>Contato</h6>
+                    <ul class="list-unstyled mb-0">
+                        <li><a asp-controller="Home" asp-action="Support">Central de ajuda</a></li>
+                        <li><a asp-controller="Home" asp-action="Support">Falar com suporte</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="cpm-footer-bottom mt-4 pt-3 d-flex flex-column flex-md-row justify-content-between gap-2">
+                <span>&copy; @DateTime.Now.Year ConsertaPraMim. Todos os direitos reservados.</span>
+                <span>
+                    <a asp-controller="Home" asp-action="ProfessionalTerms">Termos de uso</a> |
+                    <a asp-controller="Home" asp-action="Privacy">Privacidade</a>
+                </span>
+            </div>
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/cep-resolver.js" asp-append-version="true"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
