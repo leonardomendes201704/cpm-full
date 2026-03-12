@@ -1,0 +1,277 @@
+@model AdminSiteContentListViewModel
+@{
+    ViewData["Title"] = "Conteudos do Site";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h4 fw-bold mb-1">Conteudos do Site</h1>
+        <p class="text-secondary mb-0">Edite textos chave da plataforma para personalizacao futura do Admin.</p>
+    </div>
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createContentModal">
+        Novo conteudo
+    </button>
+</div>
+
+@if (TempData["AdminErrorMessage"] is string errorMessage && !string.IsNullOrWhiteSpace(errorMessage))
+{
+    <div class="alert alert-danger" role="alert">@errorMessage</div>
+}
+
+<div class="card border-0 shadow-sm">
+    <div class="table-responsive">
+        <table class="table align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Chave</th>
+                    <th>Valor</th>
+                    <th>Status</th>
+                    <th>Atualizado</th>
+                    <th class="text-end">Acoes</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.Items.Any())
+                {
+                    <tr>
+                        <td colspan="5" class="text-center text-secondary py-4">Nenhum conteudo cadastrado.</td>
+                    </tr>
+                }
+                else
+                {
+                    foreach (var item in Model.Items)
+                    {
+                        <tr>
+                            <td>
+                                <div class="fw-semibold">@item.Key</div>
+                                @if (!string.IsNullOrWhiteSpace(item.Description))
+                                {
+                                    <div class="small text-secondary">@item.Description</div>
+                                }
+                            </td>
+                            <td class="text-break" style="max-width: 420px;">@item.ValuePreview</td>
+                            <td>
+                                @if (item.IsActive)
+                                {
+                                    <span class="badge text-bg-success">Ativo</span>
+                                }
+                                else
+                                {
+                                    <span class="badge text-bg-secondary">Inativo</span>
+                                }
+                            </td>
+                            <td class="small text-secondary">
+                                @(item.UpdatedAt?.ToString("dd/MM/yyyy HH:mm") ?? item.CreatedAt.ToString("dd/MM/yyyy HH:mm"))
+                            </td>
+                            <td class="text-end">
+                                <div class="d-inline-flex gap-1">
+                                    <button
+                                        type="button"
+                                        class="btn btn-sm btn-outline-secondary cpm-details-btn"
+                                        data-id="@item.Id"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#detailsContentModal">
+                                        Detalhes
+                                    </button>
+                                    <button
+                                        type="button"
+                                        class="btn btn-sm btn-outline-primary cpm-edit-btn"
+                                        data-id="@item.Id"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#editContentModal">
+                                        Editar
+                                    </button>
+                                    <form asp-area="Admin" asp-controller="SiteContent" asp-action="Delete" method="post" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@item.Id" />
+                                        <button
+                                            type="submit"
+                                            class="btn btn-sm btn-outline-danger"
+                                            onclick="return confirm('Deseja excluir este conteudo?');">
+                                            Excluir
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="modal fade" id="detailsContentModal" tabindex="-1" aria-labelledby="detailsContentModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold" id="detailsContentModalLabel">Detalhes do conteudo</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+            <div class="modal-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-3">Chave</dt>
+                    <dd class="col-sm-9" id="detailsKey"></dd>
+
+                    <dt class="col-sm-3">Descricao</dt>
+                    <dd class="col-sm-9" id="detailsDescription"></dd>
+
+                    <dt class="col-sm-3">Status</dt>
+                    <dd class="col-sm-9" id="detailsStatus"></dd>
+
+                    <dt class="col-sm-3">Criado em</dt>
+                    <dd class="col-sm-9" id="detailsCreatedAt"></dd>
+
+                    <dt class="col-sm-3">Atualizado em</dt>
+                    <dd class="col-sm-9" id="detailsUpdatedAt"></dd>
+
+                    <dt class="col-sm-3">Valor</dt>
+                    <dd class="col-sm-9">
+                        <pre id="detailsValue" class="bg-light border rounded p-3 mb-0 text-break" style="white-space: pre-wrap;"></pre>
+                    </dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="createContentModal" tabindex="-1" aria-labelledby="createContentModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <form asp-area="Admin" asp-controller="SiteContent" asp-action="Create" method="post" novalidate>
+                @Html.AntiForgeryToken()
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold" id="createContentModalLabel">Novo conteudo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Chave</label>
+                        <input name="Key" class="form-control" maxlength="120" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Descricao</label>
+                        <input name="Description" class="form-control" maxlength="260" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Valor</label>
+                        <textarea name="Value" class="form-control" rows="8" required></textarea>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="IsActive" value="true" checked />
+                        <input type="hidden" name="IsActive" value="false" />
+                        <label class="form-check-label">Ativo</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Criar conteudo</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="editContentModal" tabindex="-1" aria-labelledby="editContentModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <form asp-area="Admin" asp-controller="SiteContent" asp-action="Edit" method="post" novalidate>
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="Id" id="editId" />
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold" id="editContentModalLabel">Editar conteudo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Chave</label>
+                        <input id="editKey" name="Key" class="form-control" maxlength="120" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Descricao</label>
+                        <input id="editDescription" name="Description" class="form-control" maxlength="260" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Valor</label>
+                        <textarea id="editValue" name="Value" class="form-control" rows="8" required></textarea>
+                    </div>
+                    <div class="form-check">
+                        <input id="editIsActive" class="form-check-input" type="checkbox" name="IsActive" value="true" />
+                        <input type="hidden" name="IsActive" value="false" />
+                        <label class="form-check-label" for="editIsActive">Ativo</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar alteracoes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        (() => {
+            const detailsModal = document.getElementById("detailsContentModal");
+            const editModal = document.getElementById("editContentModal");
+
+            const fetchContent = async (id) => {
+                const response = await fetch(`/admin/conteudos/${id}/json`, { headers: { "Accept": "application/json" } });
+                if (!response.ok) {
+                    throw new Error("fetch-failed");
+                }
+                return await response.json();
+            };
+
+            document.querySelectorAll(".cpm-details-btn").forEach((button) => {
+                button.addEventListener("click", async () => {
+                    const id = button.getAttribute("data-id");
+                    if (!id) {
+                        return;
+                    }
+
+                    try {
+                        const content = await fetchContent(id);
+                        document.getElementById("detailsKey").textContent = content.key ?? "";
+                        document.getElementById("detailsDescription").textContent = content.description || "-";
+                        document.getElementById("detailsStatus").textContent = content.isActive ? "Ativo" : "Inativo";
+                        document.getElementById("detailsCreatedAt").textContent = content.createdAt ?? "-";
+                        document.getElementById("detailsUpdatedAt").textContent = content.updatedAt ?? "-";
+                        document.getElementById("detailsValue").textContent = content.value ?? "";
+                    } catch {
+                        if (detailsModal) {
+                            const instance = bootstrap.Modal.getInstance(detailsModal);
+                            instance?.hide();
+                        }
+                        alert("Nao foi possivel carregar os detalhes do conteudo.");
+                    }
+                });
+            });
+
+            document.querySelectorAll(".cpm-edit-btn").forEach((button) => {
+                button.addEventListener("click", async () => {
+                    const id = button.getAttribute("data-id");
+                    if (!id) {
+                        return;
+                    }
+
+                    try {
+                        const content = await fetchContent(id);
+                        document.getElementById("editId").value = content.id ?? "";
+                        document.getElementById("editKey").value = content.key ?? "";
+                        document.getElementById("editDescription").value = content.description ?? "";
+                        document.getElementById("editValue").value = content.value ?? "";
+                        document.getElementById("editIsActive").checked = !!content.isActive;
+                    } catch {
+                        if (editModal) {
+                            const instance = bootstrap.Modal.getInstance(editModal);
+                            instance?.hide();
+                        }
+                        alert("Nao foi possivel carregar os dados para edicao.");
+                    }
+                });
+            });
+        })();
+    </script>
+}

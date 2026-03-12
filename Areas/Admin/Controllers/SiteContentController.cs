@@ -1,0 +1,152 @@
+using AppMobileCPM.Areas.Admin.ViewModels;
+using AppMobileCPM.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
+
+namespace AppMobileCPM.Areas.Admin.Controllers;
+
+[Area("Admin")]
+[Authorize(AuthenticationSchemes = AdminAuthConstants.AuthenticationScheme)]
+[Route("admin/conteudos")]
+public sealed class SiteContentController : Controller
+{
+    private readonly IAdminSiteContentService _contentService;
+
+    public SiteContentController(IAdminSiteContentService contentService)
+    {
+        _contentService = contentService;
+    }
+
+    [HttpGet("")]
+    public IActionResult Index()
+    {
+        var items = _contentService
+            .GetAll()
+            .Select(item => new AdminSiteContentListItemViewModel
+            {
+                Id = item.Id,
+                Key = item.Key,
+                Value = item.Value,
+                ValuePreview = item.Value.Length <= 100 ? item.Value : $"{item.Value[..100]}...",
+                Description = item.Description,
+                IsActive = item.IsActive,
+                CreatedAt = item.CreatedAt,
+                UpdatedAt = item.UpdatedAt
+            })
+            .ToList();
+
+        return View(new AdminSiteContentListViewModel
+        {
+            Items = items
+        });
+    }
+
+    [HttpGet("{id:int}/json")]
+    public IActionResult DetailsJson(int id)
+    {
+        var item = _contentService.GetById(id);
+        if (item is null)
+        {
+            return NotFound();
+        }
+
+        return Json(new
+        {
+            id = item.Id,
+            key = item.Key,
+            value = item.Value,
+            description = item.Description,
+            isActive = item.IsActive,
+            createdAt = item.CreatedAt.ToString("dd/MM/yyyy HH:mm"),
+            updatedAt = item.UpdatedAt?.ToString("dd/MM/yyyy HH:mm") ?? "-"
+        });
+    }
+
+    [HttpPost("novo")]
+    [ValidateAntiForgeryToken]
+    public IActionResult Create(AdminSiteContentInputModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            TempData["AdminErrorMessage"] = "Preencha os campos obrigatorios para criar o conteudo.";
+            return RedirectToAction(nameof(Index));
+        }
+
+        try
+        {
+            _contentService.Create(new AdminSiteContentUpsertRequest
+            {
+                Key = model.Key,
+                Value = model.Value,
+                Description = model.Description,
+                IsActive = model.IsActive
+            });
+            TempData["AdminSuccessMessage"] = "Conteudo criado com sucesso.";
+        }
+        catch (SqlException ex) when (ex.Number is 2627 or 2601)
+        {
+            TempData["AdminErrorMessage"] = "Ja existe um conteudo com essa chave.";
+        }
+        catch
+        {
+            TempData["AdminErrorMessage"] = "Nao foi possivel criar o conteudo.";
+        }
+
+        return RedirectToAction(nameof(Index));
+    }
+
+    [HttpPost("editar")]
+    [ValidateAntiForgeryToken]
+    public IActionResult Edit(AdminSiteContentInputModel model)
+    {
+        if (!ModelState.IsValid || model.Id <= 0)
+        {
+            TempData["AdminErrorMessage"] = "Dados invalidos para atualizar o conteudo.";
+            return RedirectToAction(nameof(Index));
+        }
+
+        try
+        {
+            var updated = _contentService.Update(model.Id, new AdminSiteContentUpsertRequest
+            {
+                Key = model.Key,
+                Value = model.Value,
+                Description = model.Description,
+                IsActive = model.IsActive
+            });
+
+            TempData["AdminSuccessMessage"] = updated
+                ? "Conteudo atualizado com sucesso."
+                : "Conteudo nao encontrado para atualizacao.";
+        }
+        catch (SqlException ex) when (ex.Number is 2627 or 2601)
+        {
+            TempData["AdminErrorMessage"] = "Ja existe um conteudo com essa chave.";
+        }
+        catch
+        {
+            TempData["AdminErrorMessage"] = "Nao foi possivel atualizar o conteudo.";
+        }
+
+        return RedirectToAction(nameof(Index));
+    }
+
+    [HttpPost("excluir")]
+    [ValidateAntiForgeryToken]
+    public IActionResult Delete(int id)
+    {
+        if (id <= 0)
+        {
+            TempData["AdminErrorMessage"] = "Conteudo invalido para exclusao.";
+            return RedirectToAction(nameof(Index));
+        }
+
+        var deleted = _contentService.Delete(id);
+        TempData["AdminSuccessMessage"] = deleted
+            ? "Conteudo excluido com sucesso."
+            : "Conteudo nao encontrado para exclusao.";
+
+        return RedirectToAction(nameof(Index));
+    }
+}

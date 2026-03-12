@@ -8,9 +8,14 @@
         <h1 class="h4 fw-bold mb-1">Painel administrativo</h1>
         <p class="text-secondary mb-0">Bem-vindo, @Model.AdminDisplayName.</p>
     </div>
-    <a class="btn btn-outline-primary" asp-area="Admin" asp-controller="Account" asp-action="ChangePassword">
-        Alterar senha
-    </a>
+    <div class="d-flex gap-2">
+        <a class="btn btn-outline-secondary" asp-area="Admin" asp-controller="SiteContent" asp-action="Index">
+            Gerenciar conteudos
+        </a>
+        <a class="btn btn-outline-primary" asp-area="Admin" asp-controller="Account" asp-action="ChangePassword">
+            Alterar senha
+        </a>
+    </div>
 </div>
 
 <div class="row g-3">
