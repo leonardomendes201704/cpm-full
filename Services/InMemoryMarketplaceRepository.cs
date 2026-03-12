@@ -231,12 +231,68 @@ public sealed class InMemoryMarketplaceRepository : IMarketplaceRepository
         }
     ];
 
+    private readonly List<string> _supportCategoryOptions =
+    [
+        "Duvidas sobre cadastro",
+        "Problemas tecnicos na plataforma",
+        "Pagamentos e cobrancas",
+        "Perfil profissional e reputacao",
+        "Cancelamentos e contestacoes",
+        "Sugestoes e melhorias",
+        "Outros assuntos"
+    ];
+
+    private readonly List<FaqItem> _supportFaqItems =
+    [
+        new() { Question = "Como recebo novos pedidos de servico?", Answer = "Mantenha seu perfil atualizado, com profissao principal, servicos realizados e telefone valido. Quando houver demanda na sua regiao, os contatos podem ser enviados para o numero cadastrado." },
+        new() { Question = "Preciso pagar para me cadastrar como profissional?", Answer = "O cadastro inicial e gratuito. A plataforma pode oferecer planos e recursos adicionais, que sao informados separadamente antes de qualquer contratacao." },
+        new() { Question = "Quanto tempo leva para analisar meu cadastro?", Answer = "A validacao inicial normalmente ocorre em ate 48 horas uteis. Em periodos de alta demanda esse prazo pode variar." },
+        new() { Question = "Posso alterar minha profissao e meus servicos depois?", Answer = "Sim. Voce pode ajustar suas informacoes de perfil sempre que necessario para refletir melhor sua area de atuacao." },
+        new() { Question = "Como funciona a avaliacao dos clientes?", Answer = "Clientes podem avaliar atendimentos apos a conclusao do servico. As avaliacoes ajudam outros usuarios e impactam a visibilidade do seu perfil." },
+        new() { Question = "O que acontece se um cliente cancelar o servico?", Answer = "Cancelamentos devem ser tratados com transparencia entre as partes. Em casos de conflito, registre detalhes no suporte para analise." },
+        new() { Question = "Como atualizo meu telefone ou CEP?", Answer = "Acesse a area de cadastro/perfil e atualize os dados. Sempre mantenha telefone e CEP corretos para evitar perda de oportunidades." },
+        new() { Question = "Como reportar comportamento inadequado de cliente ou profissional?", Answer = "Use o formulario de suporte e selecione a categoria adequada. Informe data, contexto e evidencias para agilizar a apuracao." },
+        new() { Question = "Posso atender em mais de uma cidade?", Answer = "Sim, desde que voce consiga cumprir prazos e deslocamento. Recomenda-se detalhar no seu perfil sua area principal de atendimento." },
+        new() { Question = "Como faco para encerrar meu cadastro?", Answer = "Envie uma solicitacao no suporte com o assunto de encerramento de conta. A equipe confirmara os passos e prazos." }
+    ];
+
+    private readonly Dictionary<string, string> _siteContents = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ["home.hero.title"] = "Resolva os problemas da sua casa",
+        ["home.hero.subtitle"] = "Encontre eletricistas, encanadores, pedreiros e outros especialistas em minutos, com atendimento proximo de voce.",
+        ["home.topservices.title"] = "Servicos mais buscados",
+        ["home.topservices.subtitle"] = "Escolha a categoria e receba orcamentos rapidamente",
+        ["home.about.title"] = "Sobre a ConsertaPraMim",
+        ["home.about.subtitle"] = "Somos uma plataforma digital que conecta clientes e prestadores locais para servicos domesticos, manutencao, instalacoes e reformas.",
+        ["home.about.proposal.title"] = "Nossa proposta",
+        ["home.about.proposal.paragraph1"] = "A ConsertaPraMim nasceu para simplificar a contratacao de servicos e fortalecer profissionais da propria regiao. A operacao inicial comeca em Praia Grande, com foco em qualidade, organizacao e comunicacao clara.",
+        ["home.about.proposal.paragraph2"] = "Aqui, cliente e profissional conversam de forma direta, recebem e enviam orcamentos com agilidade e acompanham o atendimento com mais transparencia.",
+        ["home.about.differentials.title"] = "Diferenciais da plataforma",
+        ["home.howitworks.title"] = "Como funciona",
+        ["home.howitworks.subtitle"] = "Fluxo completo da solicitacao ate a avaliacao final",
+        ["home.procta.title"] = "Voce e profissional?",
+        ["home.procta.subtitle"] = "Cadastre-se no ConsertaPraMim e receba novas oportunidades todos os dias na sua cidade.",
+        ["home.finalcta.title"] = "Pronto para resolver seu problema?",
+        ["home.finalcta.subtitle"] = "Solicite agora e receba contatos de profissionais proximos.",
+        ["legal.professional.html"] = "<p><strong>Ultima atualizacao:</strong> 12 de marco de 2026.</p><h5>1. Aceitacao</h5><p>Ao se cadastrar, o profissional concorda com estes termos e com as politicas da plataforma.</p><h5>2. Cadastro</h5><p>As informacoes devem ser verdadeiras e atualizadas, incluindo nome, telefone, CEP e servicos prestados.</p><h5>3. Responsabilidades</h5><p>O profissional e responsavel pela execucao tecnica, qualidade e conduta no atendimento.</p><h5>4. Relacao com clientes</h5><p>Valores, prazos e condicoes sao negociados diretamente entre as partes.</p><h5>5. Conduta</h5><p>Fraudes, linguagem ofensiva ou praticas abusivas podem gerar suspensao da conta.</p><h5>6. Contato</h5><p>Em caso de duvidas, utilize a Central de Suporte.</p>",
+        ["legal.privacy.html"] = "<p><strong>Ultima atualizacao:</strong> 12 de marco de 2026.</p><h5>1. Coleta de dados</h5><p>Coletamos dados como nome, telefone, e-mail e CEP para operar a plataforma.</p><h5>2. Uso dos dados</h5><p>Utilizamos os dados para conectar clientes e profissionais, suporte e melhoria continua.</p><h5>3. Compartilhamento</h5><p>Compartilhamos apenas o necessario para viabilizar a prestacao do servico.</p><h5>4. Seguranca</h5><p>Adotamos medidas tecnicas e administrativas para proteger as informacoes.</p><h5>5. Direitos do titular</h5><p>Voce pode solicitar acesso, correcao e exclusao de dados conforme a legislacao aplicavel.</p>"
+    };
+
     public IReadOnlyList<ServiceCategory> GetCategories() => _categories;
 
     public ServiceCategory? GetCategoryById(string categoryId) =>
         _categories.FirstOrDefault(c => c.Id.Equals(categoryId, StringComparison.OrdinalIgnoreCase));
 
     public IReadOnlyList<string> GetProfessionOptions() => _professionOptions;
+
+    public IReadOnlyList<string> GetSupportCategoryOptions() => _supportCategoryOptions;
+
+    public IReadOnlyList<FaqItem> GetSupportFaqItems() => _supportFaqItems;
+
+    public IReadOnlyDictionary<string, string> GetSiteContents() => _siteContents;
+
+    public string? GetSiteContent(string key) =>
+        _siteContents.TryGetValue(key, out var value) ? value : null;
 
     public IReadOnlyList<Professional> GetProfessionals(string? searchTerm = null)
     {

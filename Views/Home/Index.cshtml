@@ -10,9 +10,9 @@
 
 <section class="cpm-hero">
     <div class="container-lg text-center">
-        <h1 class="display-5 fw-bold mb-3">Resolva os problemas da sua casa</h1>
+        <h1 class="display-5 fw-bold mb-3">@Model.Content("home.hero.title", "Resolva os problemas da sua casa")</h1>
         <p class="lead text-white-50 mx-auto mb-4" style="max-width: 760px;">
-            Encontre eletricistas, encanadores, pedreiros e outros especialistas em minutos, com atendimento proximo de voce.
+            @Model.Content("home.hero.subtitle", "Encontre eletricistas, encanadores, pedreiros e outros especialistas em minutos, com atendimento proximo de voce.")
         </p>
         <form class="row g-2 justify-content-center" asp-controller="Home" asp-action="RequestService" method="get">
             <div class="col-12 col-md-4">
@@ -51,8 +51,8 @@
 <section class="cpm-section bg-white">
     <div class="container-lg">
         <div class="text-center mb-5">
-            <h2 class="fw-bold">Servicos mais buscados</h2>
-            <p class="text-secondary-emphasis mb-0">Escolha a categoria e receba orcamentos rapidamente</p>
+            <h2 class="fw-bold">@Model.Content("home.topservices.title", "Servicos mais buscados")</h2>
+            <p class="text-secondary-emphasis mb-0">@Model.Content("home.topservices.subtitle", "Escolha a categoria e receba orcamentos rapidamente")</p>
         </div>
         <div class="row g-3 justify-content-center">
             @foreach (var category in Model.Categories)
@@ -71,28 +71,27 @@
 <section class="cpm-section">
     <div class="container-lg">
         <div class="text-center mb-5">
-            <h2 class="fw-bold">Sobre a ConsertaPraMim</h2>
+            <h2 class="fw-bold">@Model.Content("home.about.title", "Sobre a ConsertaPraMim")</h2>
             <p class="text-secondary-emphasis mb-0">
-                Somos uma plataforma digital que conecta clientes e prestadores locais para servicos domesticos, manutencao, instalacoes e reformas.
+                @Model.Content("home.about.subtitle", "Somos uma plataforma digital que conecta clientes e prestadores locais para servicos domesticos, manutencao, instalacoes e reformas.")
             </p>
         </div>
 
         <div class="row g-4 align-items-stretch">
             <div class="col-12 col-lg-6">
                 <div class="cpm-card h-100 p-4">
-                    <h5 class="fw-bold mb-3">Nossa proposta</h5>
+                    <h5 class="fw-bold mb-3">@Model.Content("home.about.proposal.title", "Nossa proposta")</h5>
                     <p class="text-secondary-emphasis mb-3">
-                        A ConsertaPraMim nasceu para simplificar a contratacao de servicos e fortalecer profissionais da propria regiao.
-                        A operacao inicial comeca em Praia Grande, com foco em qualidade, organizacao e comunicacao clara.
+                        @Model.Content("home.about.proposal.paragraph1", "A ConsertaPraMim nasceu para simplificar a contratacao de servicos e fortalecer profissionais da propria regiao. A operacao inicial comeca em Praia Grande, com foco em qualidade, organizacao e comunicacao clara.")
                     </p>
                     <p class="text-secondary-emphasis mb-0">
-                        Aqui, cliente e profissional conversam de forma direta, recebem e enviam orcamentos com agilidade e acompanham o atendimento com mais transparencia.
+                        @Model.Content("home.about.proposal.paragraph2", "Aqui, cliente e profissional conversam de forma direta, recebem e enviam orcamentos com agilidade e acompanham o atendimento com mais transparencia.")
                     </p>
                 </div>
             </div>
             <div class="col-12 col-lg-6">
                 <div class="cpm-card h-100 p-4">
-                    <h5 class="fw-bold mb-3">Diferenciais da plataforma</h5>
+                    <h5 class="fw-bold mb-3">@Model.Content("home.about.differentials.title", "Diferenciais da plataforma")</h5>
                     <div class="row g-2">
                         <div class="col-12 col-sm-6"><span class="cpm-badge d-inline-flex py-2 px-3">Prestadores locais</span></div>
                         <div class="col-12 col-sm-6"><span class="cpm-badge d-inline-flex py-2 px-3">Comunicacao direta</span></div>
@@ -112,8 +111,8 @@
 <section class="cpm-section">
     <div class="container-lg">
         <div class="text-center mb-5">
-            <h2 class="fw-bold">Como funciona</h2>
-            <p class="text-secondary-emphasis mb-0">Fluxo completo da solicitacao ate a avaliacao final</p>
+            <h2 class="fw-bold">@Model.Content("home.howitworks.title", "Como funciona")</h2>
+            <p class="text-secondary-emphasis mb-0">@Model.Content("home.howitworks.subtitle", "Fluxo completo da solicitacao ate a avaliacao final")</p>
         </div>
         <div class="row g-4">
             <div class="col-12 col-md-6 col-lg-4 cpm-step">
@@ -182,9 +181,9 @@
     <div class="container-lg">
         <div class="row align-items-center g-4">
             <div class="col-12 col-lg-7">
-                <h2 class="fw-bold">Voce e profissional?</h2>
+                <h2 class="fw-bold">@Model.Content("home.procta.title", "Voce e profissional?")</h2>
                 <p class="text-secondary-emphasis">
-                    Cadastre-se no ConsertaPraMim e receba novas oportunidades todos os dias na sua cidade.
+                    @Model.Content("home.procta.subtitle", "Cadastre-se no ConsertaPraMim e receba novas oportunidades todos os dias na sua cidade.")
                 </p>
                 <div class="d-flex flex-wrap gap-2">
                     <a class="btn cpm-btn-primary" asp-controller="Home" asp-action="RegisterProfessional">Quero me cadastrar</a>
@@ -200,8 +199,8 @@
 
 <section class="py-5 text-center" style="background: var(--cpm-primary); color: #fff;">
     <div class="container-lg py-4">
-        <h2 class="fw-bold mb-3">Pronto para resolver seu problema?</h2>
-        <p class="mb-4">Solicite agora e receba contatos de profissionais proximos.</p>
+        <h2 class="fw-bold mb-3">@Model.Content("home.finalcta.title", "Pronto para resolver seu problema?")</h2>
+        <p class="mb-4">@Model.Content("home.finalcta.subtitle", "Solicite agora e receba contatos de profissionais proximos.")</p>
         <a class="btn btn-dark btn-lg" asp-controller="Home" asp-action="RequestService">Solicitar servico agora</a>
     </div>
 </section>

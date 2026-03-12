@@ -1,12 +1,24 @@
 using AppMobileCPM.Services;
 using System.IO.Compression;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.ResponseCompression;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-builder.Services.AddSingleton<IMarketplaceRepository, InMemoryMarketplaceRepository>();
+builder.Services.AddSingleton<IMarketplaceRepository, SqlMarketplaceRepository>();
+builder.Services.AddSingleton<IAdminAuthService, SqlAdminAuthService>();
+builder.Services.AddAuthentication(AdminAuthConstants.AuthenticationScheme)
+    .AddCookie(AdminAuthConstants.AuthenticationScheme, options =>
+    {
+        options.Cookie.Name = "cpm_admin_auth";
+        options.LoginPath = "/admin/login";
+        options.AccessDeniedPath = "/admin/login";
+        options.SlidingExpiration = true;
+        options.ExpireTimeSpan = TimeSpan.FromHours(12);
+    });
+builder.Services.AddAuthorization();
 builder.Services.AddResponseCompression(options =>
 {
     options.EnableForHttps = true;
@@ -45,6 +57,7 @@ app.UseStaticFiles(new StaticFileOptions
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

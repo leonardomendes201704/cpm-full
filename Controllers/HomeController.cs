@@ -12,70 +12,6 @@ namespace AppMobileCPM.Controllers;
 public class HomeController : Controller
 {
     private readonly IMarketplaceRepository _repository;
-    private static readonly IReadOnlyList<string> SupportCategoryOptions =
-    [
-        "Duvidas sobre cadastro",
-        "Problemas tecnicos na plataforma",
-        "Pagamentos e cobrancas",
-        "Perfil profissional e reputacao",
-        "Cancelamentos e contestacoes",
-        "Sugestoes e melhorias",
-        "Outros assuntos"
-    ];
-
-    private static readonly IReadOnlyList<SupportFaqItemViewModel> SupportFaqItems =
-    [
-        new()
-        {
-            Question = "Como recebo novos pedidos de servico?",
-            Answer = "Mantenha seu perfil atualizado, com profissao principal, servicos realizados e telefone valido. Quando houver demanda na sua regiao, os contatos podem ser enviados para o numero cadastrado."
-        },
-        new()
-        {
-            Question = "Preciso pagar para me cadastrar como profissional?",
-            Answer = "O cadastro inicial e gratuito. A plataforma pode oferecer planos e recursos adicionais, que sao informados separadamente antes de qualquer contratacao."
-        },
-        new()
-        {
-            Question = "Quanto tempo leva para analisar meu cadastro?",
-            Answer = "A validacao inicial normalmente ocorre em ate 48 horas uteis. Em periodos de alta demanda esse prazo pode variar."
-        },
-        new()
-        {
-            Question = "Posso alterar minha profissao e meus servicos depois?",
-            Answer = "Sim. Voce pode ajustar suas informacoes de perfil sempre que necessario para refletir melhor sua area de atuacao."
-        },
-        new()
-        {
-            Question = "Como funciona a avaliacao dos clientes?",
-            Answer = "Clientes podem avaliar atendimentos apos a conclusao do servico. As avaliacoes ajudam outros usuarios e impactam a visibilidade do seu perfil."
-        },
-        new()
-        {
-            Question = "O que acontece se um cliente cancelar o servico?",
-            Answer = "Cancelamentos devem ser tratados com transparencia entre as partes. Em casos de conflito, registre detalhes no suporte para analise."
-        },
-        new()
-        {
-            Question = "Como atualizo meu telefone ou CEP?",
-            Answer = "Acesse a area de cadastro/perfil e atualize os dados. Sempre mantenha telefone e CEP corretos para evitar perda de oportunidades."
-        },
-        new()
-        {
-            Question = "Como reportar comportamento inadequado de cliente ou profissional?",
-            Answer = "Use o formulario de suporte e selecione a categoria adequada. Informe data, contexto e evidencias para agilizar a apuracao."
-        },
-        new()
-        {
-            Question = "Posso atender em mais de uma cidade?",
-            Answer = "Sim, desde que voce consiga cumprir prazos e deslocamento. Recomenda-se detalhar no seu perfil sua area principal de atendimento."
-        },
-        new()
-        {
-            Question = "Como faco para encerrar meu cadastro?",
-            Answer = "Envie uma solicitacao no suporte com o assunto de encerramento de conta. A equipe confirmara os passos e prazos."
-        }
-    ];
 
     public HomeController(IMarketplaceRepository repository)
     {
@@ -87,7 +23,8 @@ public class HomeController : Controller
     {
         return View(new HomePageViewModel
         {
-            Categories = _repository.GetCategories()
+            Categories = _repository.GetCategories(),
+            SiteContent = _repository.GetSiteContents()
         });
     }
 
@@ -220,12 +157,14 @@ public class HomeController : Controller
     [HttpGet("termos-de-uso-profissionais")]
     public IActionResult ProfessionalTerms()
     {
+        ViewData["LegalHtml"] = _repository.GetSiteContent("legal.professional.html");
         return View();
     }
 
     [HttpGet("privacidade")]
     public IActionResult Privacy()
     {
+        ViewData["LegalHtml"] = _repository.GetSiteContent("legal.privacy.html");
         return View();
     }
 
@@ -235,8 +174,8 @@ public class HomeController : Controller
         return View(new SupportPageViewModel
         {
             Form = new SupportRequestInputModel(),
-            CategoryOptions = SupportCategoryOptions,
-            FaqItems = SupportFaqItems,
+            CategoryOptions = _repository.GetSupportCategoryOptions(),
+            FaqItems = _repository.GetSupportFaqItems(),
             IsSubmitted = string.Equals(TempData["SupportSubmitted"]?.ToString(), "1", StringComparison.Ordinal),
             SubmittedName = TempData["SupportName"]?.ToString() ?? string.Empty
         });
@@ -246,7 +185,8 @@ public class HomeController : Controller
     [ValidateAntiForgeryToken]
     public IActionResult Support([Bind(Prefix = "Form")] SupportRequestInputModel form)
     {
-        if (!SupportCategoryOptions.Contains(form.Category, StringComparer.OrdinalIgnoreCase))
+        var supportCategoryOptions = _repository.GetSupportCategoryOptions();
+        if (!supportCategoryOptions.Contains(form.Category, StringComparer.OrdinalIgnoreCase))
         {
             ModelState.AddModelError(nameof(form.Category), "Selecione uma categoria valida.");
         }
@@ -256,8 +196,8 @@ public class HomeController : Controller
             return View(new SupportPageViewModel
             {
                 Form = form,
-                CategoryOptions = SupportCategoryOptions,
-                FaqItems = SupportFaqItems,
+                CategoryOptions = supportCategoryOptions,
+                FaqItems = _repository.GetSupportFaqItems(),
                 IsSubmitted = false
             });
         }

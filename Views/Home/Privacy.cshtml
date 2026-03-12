@@ -4,63 +4,71 @@
     ViewData["MetaDescription"] = "Entenda como o ConsertaPraMim coleta, utiliza e protege dados pessoais de clientes e profissionais.";
     ViewData["MetaKeywords"] = "politica de privacidade, LGPD, dados pessoais, ConsertaPraMim";
     ViewData["CanonicalPath"] = "/privacidade";
+    var legalHtml = ViewData["LegalHtml"]?.ToString();
 }
 
 <section class="cpm-section">
     <div class="container-lg cpm-form-wrap">
         <div class="cpm-card cpm-form-card p-4 p-md-5 bg-white">
             <h1 class="fw-bold mb-3">Politica de privacidade</h1>
-            <p class="text-secondary-emphasis mb-4">Ultima atualizacao: 12 de marco de 2026.</p>
+            @if (!string.IsNullOrWhiteSpace(legalHtml))
+            {
+                <div class="text-secondary-emphasis">@Html.Raw(legalHtml)</div>
+            }
+            else
+            {
+                <p class="text-secondary-emphasis mb-4">Ultima atualizacao: 12 de marco de 2026.</p>
 
-            <h5 class="fw-bold">1. Objetivo</h5>
-            <p>
-                Esta politica explica como a ConsertaPraMim coleta, utiliza, armazena e protege dados pessoais de clientes e profissionais que usam a plataforma.
-            </p>
+                <h5 class="fw-bold">1. Objetivo</h5>
+                <p>
+                    Esta politica explica como a ConsertaPraMim coleta, utiliza, armazena e protege dados pessoais de clientes e profissionais que usam a plataforma.
+                </p>
 
-            <h5 class="fw-bold">2. Dados coletados</h5>
-            <p>
-                Podemos coletar dados como nome, telefone, e-mail, CEP, categoria de servico, historico de solicitacoes e interacoes com suporte para operar a plataforma com seguranca e eficiencia.
-            </p>
+                <h5 class="fw-bold">2. Dados coletados</h5>
+                <p>
+                    Podemos coletar dados como nome, telefone, e-mail, CEP, categoria de servico, historico de solicitacoes e interacoes com suporte para operar a plataforma com seguranca e eficiencia.
+                </p>
 
-            <h5 class="fw-bold">3. Finalidade do uso</h5>
-            <p>
-                Os dados sao utilizados para conectar clientes e prestadores, facilitar contato entre as partes, processar solicitacoes, melhorar recursos da plataforma e prevenir fraudes.
-            </p>
+                <h5 class="fw-bold">3. Finalidade do uso</h5>
+                <p>
+                    Os dados sao utilizados para conectar clientes e prestadores, facilitar contato entre as partes, processar solicitacoes, melhorar recursos da plataforma e prevenir fraudes.
+                </p>
 
-            <h5 class="fw-bold">4. Compartilhamento de dados</h5>
-            <p>
-                Compartilhamos apenas o necessario para viabilizar o atendimento solicitado. Nao comercializamos dados pessoais com terceiros.
-            </p>
+                <h5 class="fw-bold">4. Compartilhamento de dados</h5>
+                <p>
+                    Compartilhamos apenas o necessario para viabilizar o atendimento solicitado. Nao comercializamos dados pessoais com terceiros.
+                </p>
 
-            <h5 class="fw-bold">5. Armazenamento e seguranca</h5>
-            <p>
-                Adotamos medidas tecnicas e administrativas para reduzir riscos de acesso nao autorizado, perda ou uso indevido das informacoes.
-            </p>
+                <h5 class="fw-bold">5. Armazenamento e seguranca</h5>
+                <p>
+                    Adotamos medidas tecnicas e administrativas para reduzir riscos de acesso nao autorizado, perda ou uso indevido das informacoes.
+                </p>
 
-            <h5 class="fw-bold">6. Direitos do titular</h5>
-            <p>
-                Nos termos da legislacao aplicavel, voce pode solicitar confirmacao de tratamento, acesso, correcao e exclusao de dados, quando cabivel.
-            </p>
+                <h5 class="fw-bold">6. Direitos do titular</h5>
+                <p>
+                    Nos termos da legislacao aplicavel, voce pode solicitar confirmacao de tratamento, acesso, correcao e exclusao de dados, quando cabivel.
+                </p>
 
-            <h5 class="fw-bold">7. Retencao</h5>
-            <p>
-                Os dados sao mantidos pelo tempo necessario para cumprir as finalidades da plataforma e obrigacoes legais ou regulatorias.
-            </p>
+                <h5 class="fw-bold">7. Retencao</h5>
+                <p>
+                    Os dados sao mantidos pelo tempo necessario para cumprir as finalidades da plataforma e obrigacoes legais ou regulatorias.
+                </p>
 
-            <h5 class="fw-bold">8. Cookies e tecnologias similares</h5>
-            <p>
-                Podemos utilizar cookies para melhorar experiencia, desempenho e analise de navegacao. Voce pode ajustar preferencias no navegador.
-            </p>
+                <h5 class="fw-bold">8. Cookies e tecnologias similares</h5>
+                <p>
+                    Podemos utilizar cookies para melhorar experiencia, desempenho e analise de navegacao. Voce pode ajustar preferencias no navegador.
+                </p>
 
-            <h5 class="fw-bold">9. Alteracoes desta politica</h5>
-            <p>
-                Esta politica pode ser atualizada periodicamente. A versao vigente estara sempre disponivel nesta pagina, com data de atualizacao.
-            </p>
+                <h5 class="fw-bold">9. Alteracoes desta politica</h5>
+                <p>
+                    Esta politica pode ser atualizada periodicamente. A versao vigente estara sempre disponivel nesta pagina, com data de atualizacao.
+                </p>
 
-            <h5 class="fw-bold">10. Contato</h5>
-            <p class="mb-0">
-                Para duvidas sobre privacidade e tratamento de dados, utilize os canais oficiais da Central de suporte.
-            </p>
+                <h5 class="fw-bold">10. Contato</h5>
+                <p class="mb-0">
+                    Para duvidas sobre privacidade e tratamento de dados, utilize os canais oficiais da Central de suporte.
+                </p>
+            }
         </div>
     </div>
 </section>
