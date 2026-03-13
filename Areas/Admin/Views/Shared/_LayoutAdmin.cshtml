@@ -11,8 +11,8 @@
 <body class="bg-light">
     <header class="border-bottom bg-white">
         <nav class="navbar navbar-expand-lg">
-            <div class="container-lg">
-                <a class="navbar-brand fw-bold" asp-area="Admin" asp-controller="Dashboard" asp-action="Index">
+            <div class="container-fluid px-0">
+                <a class="navbar-brand fw-bold" style="padding: 10px;" asp-area="Admin" asp-controller="Dashboard" asp-action="Index">
                     Admin ConsertaPraMim
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#adminNav" aria-controls="adminNav" aria-expanded="false" aria-label="Alternar menu">
@@ -27,6 +27,12 @@
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" asp-area="Admin" asp-controller="SiteContent" asp-action="Index">Conteudos</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="Admin" asp-controller="Kanban" asp-action="Clients">Funil Clientes</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="Admin" asp-controller="Kanban" asp-action="Providers">Onboarding Prestadores</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" asp-area="Admin" asp-controller="SupportFaq" asp-action="Index">FAQ</a>
@@ -53,8 +59,8 @@
         </nav>
     </header>
 
-    <main class="py-4">
-        <div class="container-lg">
+    <main class="py-4 px-0">
+        <div class="container-fluid px-0" style="width: 98%; margin-left: auto; margin-right: auto;">
             @if (TempData["AdminSuccessMessage"] is string successMessage && !string.IsNullOrWhiteSpace(successMessage))
             {
                 <div class="alert alert-success" role="alert">@successMessage</div>
