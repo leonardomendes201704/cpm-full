@@ -109,7 +109,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
             </div>
             <div class="modal-body">
-                <dl class="row mb-0">
+                <dl class="row mb-3">
                     <dt class="col-sm-3">Chave</dt>
                     <dd class="col-sm-9" id="detailsKey"></dd>
 
@@ -125,11 +125,24 @@
                     <dt class="col-sm-3">Atualizado em</dt>
                     <dd class="col-sm-9" id="detailsUpdatedAt"></dd>
 
-                    <dt class="col-sm-3">Valor</dt>
-                    <dd class="col-sm-9">
-                        <pre id="detailsValue" class="bg-light border rounded p-3 mb-0 text-break" style="white-space: pre-wrap;"></pre>
-                    </dd>
                 </dl>
+
+                <ul class="nav nav-tabs mb-3" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#contentDetailsPreviewTab" type="button" role="tab">Preview</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#contentDetailsHtmlTab" type="button" role="tab">HTML</button>
+                    </li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane fade show active" id="contentDetailsPreviewTab" role="tabpanel">
+                        <iframe id="detailsPreviewFrame" class="w-100 border rounded" style="height: 260px;" sandbox></iframe>
+                    </div>
+                    <div class="tab-pane fade" id="contentDetailsHtmlTab" role="tabpanel">
+                        <pre id="detailsValue" class="bg-light border rounded p-3 mb-0 text-break" style="white-space: pre-wrap;"></pre>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -153,10 +166,24 @@
                         <label class="form-label">Descricao</label>
                         <input name="Description" class="form-control" maxlength="260" />
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">Valor</label>
-                        <textarea name="Value" class="form-control" rows="8" required></textarea>
+
+                    <ul class="nav nav-tabs mb-3" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#createContentEditorTab" type="button" role="tab">Editor HTML</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#createContentPreviewTab" type="button" role="tab">Preview</button>
+                        </li>
+                    </ul>
+                    <div class="tab-content">
+                        <div class="tab-pane fade show active" id="createContentEditorTab" role="tabpanel">
+                            <textarea id="createContentValue" name="Value" class="form-control" rows="8" required></textarea>
+                        </div>
+                        <div class="tab-pane fade" id="createContentPreviewTab" role="tabpanel">
+                            <iframe id="createContentPreviewFrame" class="w-100 border rounded" style="height: 260px;" sandbox></iframe>
+                        </div>
                     </div>
+
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" name="IsActive" value="true" checked />
                         <input type="hidden" name="IsActive" value="false" />
@@ -191,10 +218,24 @@
                         <label class="form-label">Descricao</label>
                         <input id="editDescription" name="Description" class="form-control" maxlength="260" />
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">Valor</label>
-                        <textarea id="editValue" name="Value" class="form-control" rows="8" required></textarea>
+
+                    <ul class="nav nav-tabs mb-3" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#editContentEditorTab" type="button" role="tab">Editor HTML</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#editContentPreviewTab" type="button" role="tab">Preview</button>
+                        </li>
+                    </ul>
+                    <div class="tab-content">
+                        <div class="tab-pane fade show active" id="editContentEditorTab" role="tabpanel">
+                            <textarea id="editValue" name="Value" class="form-control" rows="8" required></textarea>
+                        </div>
+                        <div class="tab-pane fade" id="editContentPreviewTab" role="tabpanel">
+                            <iframe id="editContentPreviewFrame" class="w-100 border rounded" style="height: 260px;" sandbox></iframe>
+                        </div>
                     </div>
+
                     <div class="form-check">
                         <input id="editIsActive" class="form-check-input" type="checkbox" name="IsActive" value="true" />
                         <input type="hidden" name="IsActive" value="false" />
@@ -213,8 +254,30 @@
 @section Scripts {
     <script>
         (() => {
+            const setPreview = (iframe, htmlText) => {
+                if (!iframe) {
+                    return;
+                }
+
+                iframe.srcdoc = htmlText || "<p style='color:#6c757d;'>Sem conteudo para preview.</p>";
+            };
+
             const detailsModal = document.getElementById("detailsContentModal");
             const editModal = document.getElementById("editContentModal");
+            const createValue = document.getElementById("createContentValue");
+            const createPreviewFrame = document.getElementById("createContentPreviewFrame");
+            const editValue = document.getElementById("editValue");
+            const editPreviewFrame = document.getElementById("editContentPreviewFrame");
+
+            createValue?.addEventListener("input", () => setPreview(createPreviewFrame, createValue.value));
+            document.querySelector('button[data-bs-target="#createContentPreviewTab"]')?.addEventListener("shown.bs.tab", () => {
+                setPreview(createPreviewFrame, createValue?.value || "");
+            });
+
+            editValue?.addEventListener("input", () => setPreview(editPreviewFrame, editValue.value));
+            document.querySelector('button[data-bs-target="#editContentPreviewTab"]')?.addEventListener("shown.bs.tab", () => {
+                setPreview(editPreviewFrame, editValue?.value || "");
+            });
 
             const fetchContent = async (id) => {
                 const response = await fetch(`/admin/conteudos/${id}/json`, { headers: { "Accept": "application/json" } });
@@ -239,6 +302,7 @@
                         document.getElementById("detailsCreatedAt").textContent = content.createdAt ?? "-";
                         document.getElementById("detailsUpdatedAt").textContent = content.updatedAt ?? "-";
                         document.getElementById("detailsValue").textContent = content.value ?? "";
+                        setPreview(document.getElementById("detailsPreviewFrame"), content.value ?? "");
                     } catch {
                         if (detailsModal) {
                             const instance = bootstrap.Modal.getInstance(detailsModal);
@@ -263,6 +327,7 @@
                         document.getElementById("editDescription").value = content.description ?? "";
                         document.getElementById("editValue").value = content.value ?? "";
                         document.getElementById("editIsActive").checked = !!content.isActive;
+                        setPreview(document.getElementById("editContentPreviewFrame"), content.value ?? "");
                     } catch {
                         if (editModal) {
                             const instance = bootstrap.Modal.getInstance(editModal);

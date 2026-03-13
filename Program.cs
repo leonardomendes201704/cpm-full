@@ -10,6 +10,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddSingleton<IMarketplaceRepository, SqlMarketplaceRepository>();
 builder.Services.AddSingleton<IAdminAuthService, SqlAdminAuthService>();
 builder.Services.AddSingleton<IAdminSiteContentService, SqlAdminSiteContentService>();
+builder.Services.AddSingleton<IAdminSupportFaqService, SqlAdminSupportFaqService>();
 builder.Services.AddAuthentication(AdminAuthConstants.AuthenticationScheme)
     .AddCookie(AdminAuthConstants.AuthenticationScheme, options =>
     {
