@@ -23,7 +23,7 @@
         <table class="table align-middle mb-0">
             <thead class="table-light">
                 <tr>
-                    <th>Chave</th>
+                    <th>Conteudo</th>
                     <th>Valor</th>
                     <th>Status</th>
                     <th>Atualizado</th>
@@ -43,11 +43,8 @@
                     {
                         <tr>
                             <td>
-                                <div class="fw-semibold">@item.Key</div>
-                                @if (!string.IsNullOrWhiteSpace(item.Description))
-                                {
-                                    <div class="small text-secondary">@item.Description</div>
-                                }
+                                <div class="fw-semibold">@item.FriendlyName</div>
+                                <div class="small text-secondary">Chave tecnica: @item.Key</div>
                             </td>
                             <td class="text-break" style="max-width: 420px;">@item.ValuePreview</td>
                             <td>
@@ -110,6 +107,9 @@
             </div>
             <div class="modal-body">
                 <dl class="row mb-3">
+                    <dt class="col-sm-3">Nome legivel</dt>
+                    <dd class="col-sm-9" id="detailsFriendlyName"></dd>
+
                     <dt class="col-sm-3">Chave</dt>
                     <dd class="col-sm-9" id="detailsKey"></dd>
 
@@ -159,12 +159,12 @@
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label class="form-label">Chave</label>
-                        <input name="Key" class="form-control" maxlength="120" required />
+                        <label class="form-label">Chave tecnica (interna)</label>
+                        <input name="Key" class="form-control" maxlength="120" required placeholder="Ex: home.hero.title" />
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Descricao</label>
-                        <input name="Description" class="form-control" maxlength="260" />
+                        <label class="form-label">Nome legivel no Admin (opcional)</label>
+                        <input name="Description" class="form-control" maxlength="260" placeholder="Ex: Home > Hero > Titulo" />
                     </div>
 
                     <ul class="nav nav-tabs mb-3" role="tablist">
@@ -211,11 +211,11 @@
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label class="form-label">Chave</label>
+                        <label class="form-label">Chave tecnica (interna)</label>
                         <input id="editKey" name="Key" class="form-control" maxlength="120" required />
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Descricao</label>
+                        <label class="form-label">Nome legivel no Admin (opcional)</label>
                         <input id="editDescription" name="Description" class="form-control" maxlength="260" />
                     </div>
 
@@ -296,6 +296,7 @@
 
                     try {
                         const content = await fetchContent(id);
+                        document.getElementById("detailsFriendlyName").textContent = content.friendlyName ?? "";
                         document.getElementById("detailsKey").textContent = content.key ?? "";
                         document.getElementById("detailsDescription").textContent = content.description || "-";
                         document.getElementById("detailsStatus").textContent = content.isActive ? "Ativo" : "Inativo";
