@@ -7,10 +7,12 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddSingleton<IMarketplaceRepository, SqlMarketplaceRepository>();
 builder.Services.AddSingleton<IAdminAuthService, SqlAdminAuthService>();
 builder.Services.AddSingleton<IAdminSiteContentService, SqlAdminSiteContentService>();
 builder.Services.AddSingleton<IAdminSupportFaqService, SqlAdminSupportFaqService>();
+builder.Services.AddScoped<ISiteContentResolver, SiteContentResolver>();
 builder.Services.AddAuthentication(AdminAuthConstants.AuthenticationScheme)
     .AddCookie(AdminAuthConstants.AuthenticationScheme, options =>
     {

@@ -6,7 +6,6 @@ public sealed class AdminSiteContentInputModel
 {
     public int Id { get; set; }
 
-    [Required(ErrorMessage = "Informe a chave do conteudo.")]
     [StringLength(120, ErrorMessage = "A chave deve ter no maximo 120 caracteres.")]
     public string Key { get; set; } = string.Empty;
 

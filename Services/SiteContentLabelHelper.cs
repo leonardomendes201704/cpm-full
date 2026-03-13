@@ -2,9 +2,32 @@ namespace AppMobileCPM.Services;
 
 public static class SiteContentLabelHelper
 {
+    private static readonly IReadOnlyDictionary<string, string> WordMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+    {
+        ["faq"] = "FAQ",
+        ["seo"] = "SEO",
+        ["og"] = "OG",
+        ["cta"] = "CTA",
+        ["url"] = "URL",
+        ["id"] = "ID",
+        ["cep"] = "CEP",
+        ["html"] = "HTML"
+    };
+
     private static readonly IReadOnlyDictionary<string, string> TokenMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
     {
         ["home"] = "Home",
+        ["layout"] = "Layout",
+        ["branding"] = "Marca",
+        ["meta"] = "SEO",
+        ["schema"] = "Schema",
+        ["request"] = "Solicitar servico",
+        ["register"] = "Cadastro profissional",
+        ["professionals"] = "Profissionais",
+        ["support"] = "Suporte",
+        ["terms"] = "Termos de uso",
+        ["privacy"] = "Privacidade",
+        ["error"] = "Erro",
         ["hero"] = "Hero",
         ["about"] = "Sobre",
         ["proposal"] = "Proposta",
@@ -57,6 +80,28 @@ public static class SiteContentLabelHelper
             return mapped;
         }
 
-        return char.ToUpperInvariant(token[0]) + token[1..];
+        var words = token
+            .Split(['_', '-', ' '], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Select(ToReadableWord)
+            .ToArray();
+
+        if (words.Length == 0)
+        {
+            return "Conteudo";
+        }
+
+        return string.Join(" ", words);
+    }
+
+    private static string ToReadableWord(string word)
+    {
+        if (WordMap.TryGetValue(word, out var mapped))
+        {
+            return mapped;
+        }
+
+        return word.Length == 1
+            ? word.ToUpperInvariant()
+            : char.ToUpperInvariant(word[0]) + word[1..];
     }
 }

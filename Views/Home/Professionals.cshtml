@@ -1,25 +1,28 @@
 @model ProfessionalsPageViewModel
 @{
-    ViewData["Title"] = "Profissionais";
-    ViewData["SeoTitle"] = "Profissionais de servicos residenciais";
-    ViewData["MetaDescription"] = "Busque profissionais por nome ou profissao e encontre especialistas para eletrica, hidraulica, reformas e manutencao residencial.";
-    ViewData["MetaKeywords"] = "profissionais, eletricista, encanador, pedreiro, pintor, servicos residenciais";
+    string C(string key, string fallback) => SiteContent.Get(key, fallback);
+
+    var pageTitle = C("professionals.meta.title", "Profissionais");
+    ViewData["Title"] = pageTitle;
+    ViewData["SeoTitle"] = C("professionals.meta.seo_title", "Profissionais de servicos residenciais");
+    ViewData["MetaDescription"] = C("professionals.meta.description", "Busque profissionais por nome ou profissao e encontre especialistas para eletrica, hidraulica, reformas e manutencao residencial.");
+    ViewData["MetaKeywords"] = C("professionals.meta.keywords", "profissionais, eletricista, encanador, pedreiro, pintor, servicos residenciais");
     ViewData["CanonicalPath"] = "/profissionais";
-    ViewData["OgImage"] = Url.Content("~/images/7237a130-fa5b-4e98-9118-ed5b0d465fa6.png");
+    ViewData["OgImage"] = C("professionals.meta.og_image_url", C("branding.og_image_url", Url.Content("~/images/7237a130-fa5b-4e98-9118-ed5b0d465fa6.png")));
 }
 
 <section class="cpm-section">
     <div class="container-lg">
         <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-end gap-3 mb-4">
             <div>
-                <h1 class="fw-bold mb-1">Profissionais disponiveis</h1>
-                <p class="text-secondary-emphasis mb-0">Encontre o especialista ideal para o seu problema.</p>
+                <h1 class="fw-bold mb-1">@C("professionals.page.title", "Profissionais disponiveis")</h1>
+                <p class="text-secondary-emphasis mb-0">@C("professionals.page.subtitle", "Encontre o especialista ideal para o seu problema.")</p>
             </div>
             <form class="w-100" style="max-width: 420px;" asp-controller="Home" asp-action="Professionals" method="get">
                 <div class="input-group">
                     <span class="input-group-text"><i class="bi bi-search"></i></span>
-                    <input type="text" class="form-control" name="searchTerm" value="@Model.SearchTerm" placeholder="Buscar por nome ou profissao" />
-                    <button type="submit" class="btn cpm-btn-primary">Buscar</button>
+                    <input type="text" class="form-control" name="searchTerm" value="@Model.SearchTerm" placeholder="@C("professionals.search.placeholder", "Buscar por nome ou profissao")" />
+                    <button type="submit" class="btn cpm-btn-primary">@C("professionals.search.button", "Buscar")</button>
                 </div>
             </form>
         </div>
@@ -28,7 +31,7 @@
             @if (!Model.Professionals.Any())
             {
                 <div class="col-12">
-                    <div class="alert alert-warning mb-0">Nenhum profissional encontrado para sua busca.</div>
+                    <div class="alert alert-warning mb-0">@C("professionals.empty", "Nenhum profissional encontrado para sua busca.")</div>
                 </div>
             }
             else
@@ -58,7 +61,7 @@
                                 </div>
                                 <div class="mt-4 small text-secondary-emphasis d-flex align-items-center gap-2 mb-3">
                                     <i class="bi bi-geo-alt"></i>
-                                    <span>A @pro.Distance de voce</span>
+                                    <span>@C("professionals.card.distance_template", "A {distance} de voce").Replace("{distance}", pro.Distance, StringComparison.OrdinalIgnoreCase)</span>
                                 </div>
                                 <p class="cpm-pro-description mb-3">@pro.Description</p>
                                 <div class="d-flex flex-wrap gap-2">
@@ -76,7 +79,7 @@
                                     data-bs-target="#serviceGalleryModal"
                                     data-professional-id="@pro.Id"
                                     data-photo-index="0">
-                                    Ver serviços
+                                    @C("professionals.card.view_services", "Ver servicos")
                                 </button>
                             </div>
                         </div>
@@ -91,18 +94,18 @@
     <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title fw-bold" id="serviceGalleryModalLabel">Galeria de servicos</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                <h5 class="modal-title fw-bold" id="serviceGalleryModalLabel">@C("professionals.gallery.title", "Galeria de servicos")</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="@C("professionals.gallery.close", "Fechar")"></button>
             </div>
             <div class="modal-body">
                 <div class="row g-3">
                     <div class="col-12 col-lg-9">
                         <div class="cpm-gallery-main-wrap">
-                            <button type="button" id="serviceGalleryPrevBtn" class="cpm-gallery-nav-btn cpm-gallery-nav-prev" aria-label="Foto anterior">
+                            <button type="button" id="serviceGalleryPrevBtn" class="cpm-gallery-nav-btn cpm-gallery-nav-prev" aria-label="@C("professionals.gallery.previous", "Foto anterior")">
                                 <i class="bi bi-chevron-left"></i>
                             </button>
-                            <img id="serviceGalleryMainImage" class="cpm-gallery-main-image" alt="Foto do servico" />
-                            <button type="button" id="serviceGalleryNextBtn" class="cpm-gallery-nav-btn cpm-gallery-nav-next" aria-label="Proxima foto">
+                            <img id="serviceGalleryMainImage" class="cpm-gallery-main-image" alt="@C("professionals.gallery.main_image_alt", "Foto do servico")" />
+                            <button type="button" id="serviceGalleryNextBtn" class="cpm-gallery-nav-btn cpm-gallery-nav-next" aria-label="@C("professionals.gallery.next", "Proxima foto")">
                                 <i class="bi bi-chevron-right"></i>
                             </button>
                         </div>
@@ -147,16 +150,16 @@
             {
                 ["@context"] = "https://schema.org",
                 ["@type"] = "CollectionPage",
-                ["name"] = "Profissionais disponiveis",
+                ["name"] = C("professionals.schema.collection.name", C("professionals.page.title", "Profissionais disponiveis")),
                 ["url"] = $"{baseUrl}/profissionais",
-                ["description"] = "Lista de profissionais disponiveis para servicos residenciais.",
+                ["description"] = C("professionals.schema.collection.description", "Lista de profissionais disponiveis para servicos residenciais."),
                 ["inLanguage"] = "pt-BR"
             },
             new Dictionary<string, object?>
             {
                 ["@context"] = "https://schema.org",
                 ["@type"] = "ItemList",
-                ["name"] = "Prestadores em destaque",
+                ["name"] = C("professionals.schema.itemlist.name", "Prestadores em destaque"),
                 ["itemListElement"] = professionalsList
             }
         };
@@ -173,6 +176,14 @@
             const thumbsContainerEl = document.getElementById("serviceGalleryThumbs");
             const prevBtn = document.getElementById("serviceGalleryPrevBtn");
             const nextBtn = document.getElementById("serviceGalleryNextBtn");
+            const messages = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(new
+            {
+                galleryTitle = C("professionals.gallery.title", "Galeria de servicos"),
+                galleryTitleTemplate = C("professionals.gallery.title_template", "Galeria de servicos - {name}"),
+                noPhotosAlt = C("professionals.gallery.no_photos_alt", "Sem fotos de servico"),
+                serviceAltTemplate = C("professionals.gallery.service_alt_template", "Servico {index} de {name}"),
+                thumbAltTemplate = C("professionals.gallery.thumb_alt_template", "Miniatura {index} de {name}")
+            }));
 
             if (!modalEl || !modalTitleEl || !mainImageEl || !thumbsContainerEl || !prevBtn || !nextBtn) {
                 return;
@@ -189,13 +200,20 @@
             let activePhotoIndex = 0;
 
             const getActiveGallery = () => galleryData[activeProfessionalId];
+            const formatTemplate = (template, replacements) => {
+                let result = template || "";
+                Object.keys(replacements).forEach((key) => {
+                    result = result.replaceAll(`{${key}}`, replacements[key]);
+                });
+                return result;
+            };
 
             const renderGallery = () => {
                 const gallery = getActiveGallery();
                 if (!gallery || !gallery.photos || gallery.photos.length === 0) {
-                    modalTitleEl.textContent = "Galeria de servicos";
+                    modalTitleEl.textContent = messages.galleryTitle;
                     mainImageEl.removeAttribute("src");
-                    mainImageEl.alt = "Sem fotos de servico";
+                    mainImageEl.alt = messages.noPhotosAlt;
                     thumbsContainerEl.innerHTML = "";
                     prevBtn.disabled = true;
                     nextBtn.disabled = true;
@@ -209,9 +227,12 @@
                 }
 
                 const currentPhotoUrl = gallery.photos[activePhotoIndex];
-                modalTitleEl.textContent = `Galeria de servicos - ${gallery.name}`;
+                modalTitleEl.textContent = formatTemplate(messages.galleryTitleTemplate, { name: gallery.name });
                 mainImageEl.src = currentPhotoUrl;
-                mainImageEl.alt = `Servico ${activePhotoIndex + 1} de ${gallery.name}`;
+                mainImageEl.alt = formatTemplate(messages.serviceAltTemplate, {
+                    index: (activePhotoIndex + 1).toString(),
+                    name: gallery.name
+                });
 
                 thumbsContainerEl.innerHTML = "";
                 gallery.photos.forEach((photoUrl, idx) => {
@@ -225,7 +246,10 @@
 
                     const thumbImage = document.createElement("img");
                     thumbImage.src = photoUrl;
-                    thumbImage.alt = `Miniatura ${idx + 1} de ${gallery.name}`;
+                    thumbImage.alt = formatTemplate(messages.thumbAltTemplate, {
+                        index: (idx + 1).toString(),
+                        name: gallery.name
+                    });
                     thumbImage.className = "cpm-gallery-thumb-image";
                     thumbImage.referrerPolicy = "no-referrer";
 

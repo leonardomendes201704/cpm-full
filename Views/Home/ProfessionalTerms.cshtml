@@ -1,76 +1,23 @@
 @{
-    ViewData["Title"] = "Termos de uso para profissionais";
-    ViewData["SeoTitle"] = "Termos de uso para profissionais";
-    ViewData["MetaDescription"] = "Consulte os termos de uso para profissionais cadastrados na plataforma ConsertaPraMim.";
-    ViewData["MetaKeywords"] = "termos de uso, profissionais, plataforma, ConsertaPraMim";
+    string C(string key, string fallback) => SiteContent.Get(key, fallback);
+
+    ViewData["Title"] = C("terms.meta.title", "Termos de uso para profissionais");
+    ViewData["SeoTitle"] = C("terms.meta.seo_title", "Termos de uso para profissionais");
+    ViewData["MetaDescription"] = C("terms.meta.description", "Consulte os termos de uso para profissionais cadastrados na plataforma ConsertaPraMim.");
+    ViewData["MetaKeywords"] = C("terms.meta.keywords", "termos de uso, profissionais, plataforma, ConsertaPraMim");
     ViewData["CanonicalPath"] = "/termos-de-uso-profissionais";
     var legalHtml = ViewData["LegalHtml"]?.ToString();
+    if (string.IsNullOrWhiteSpace(legalHtml))
+    {
+        legalHtml = C("legal.professional.html", "<p>Conteudo indisponivel no momento.</p>");
+    }
 }
 
 <section class="cpm-section">
     <div class="container-lg cpm-form-wrap">
         <div class="cpm-card cpm-form-card p-4 p-md-5 bg-white">
-            <h1 class="fw-bold mb-3">Termos de uso para profissionais</h1>
-            @if (!string.IsNullOrWhiteSpace(legalHtml))
-            {
-                <div class="text-secondary-emphasis">@Html.Raw(legalHtml)</div>
-            }
-            else
-            {
-                <p class="text-secondary-emphasis mb-4">
-                    Ultima atualizacao: 12 de marco de 2026.
-                </p>
-
-                <h5 class="fw-bold">1. Aceitacao dos termos</h5>
-                <p>
-                    Ao criar e manter um cadastro na plataforma ConsertaPraMim, o profissional declara que leu, compreendeu e aceitou estes termos, comprometendo-se a cumpri-los integralmente.
-                </p>
-
-                <h5 class="fw-bold">2. Cadastro e informacoes veridicas</h5>
-                <p>
-                    O profissional deve fornecer informacoes verdadeiras, completas e atualizadas, incluindo dados pessoais, telefone, CEP de atendimento e servicos prestados. Informacoes falsas podem resultar em suspensao ou exclusao do cadastro.
-                </p>
-
-                <h5 class="fw-bold">3. Prestacao de servicos</h5>
-                <p>
-                    O profissional e exclusivamente responsavel pela execucao dos servicos contratados, qualidade tecnica, cumprimento de prazos e conduta durante o atendimento ao cliente.
-                </p>
-
-                <h5 class="fw-bold">4. Relacao com clientes</h5>
-                <p>
-                    Negociacoes, valores, condicoes de pagamento, garantias e eventuais reembolsos sao tratados diretamente entre profissional e cliente. A plataforma nao e parte contratante da prestacao de servico.
-                </p>
-
-                <h5 class="fw-bold">5. Conduta e proibicoes</h5>
-                <p>
-                    E proibido utilizar linguagem ofensiva, praticar fraude, divulgar conteudo enganoso, cobrar valores abusivos sem transparencia ou violar leis aplicaveis. Condutas inadequadas podem gerar bloqueio imediato do perfil.
-                </p>
-
-                <h5 class="fw-bold">6. Avaliacoes e reputacao</h5>
-                <p>
-                    A plataforma pode exibir avaliacoes e comentarios feitos por clientes. O profissional concorda com a exibicao dessas informacoes para fins de transparencia e melhoria da experiencia de contratacao.
-                </p>
-
-                <h5 class="fw-bold">7. Uso de dados</h5>
-                <p>
-                    Os dados do profissional sao tratados para operacao da plataforma, contato com clientes e melhoria dos servicos, conforme a legislacao brasileira aplicavel e a politica de privacidade vigente.
-                </p>
-
-                <h5 class="fw-bold">8. Suspensao ou encerramento de conta</h5>
-                <p>
-                    A plataforma podera suspender ou encerrar cadastros que violem estes termos, apresentem riscos a usuarios ou descumpram obrigacoes legais.
-                </p>
-
-                <h5 class="fw-bold">9. Alteracoes destes termos</h5>
-                <p>
-                    Estes termos podem ser atualizados periodicamente. A versao mais recente sera publicada nesta pagina, com data de atualizacao destacada.
-                </p>
-
-                <h5 class="fw-bold">10. Contato</h5>
-                <p class="mb-0">
-                    Em caso de duvidas sobre estes termos, entre em contato pelos canais oficiais de suporte da plataforma.
-                </p>
-            }
+            <h1 class="fw-bold mb-3">@C("terms.page.title", "Termos de uso para profissionais")</h1>
+            <div class="text-secondary-emphasis">@Html.Raw(legalHtml)</div>
         </div>
     </div>
 </section>
@@ -84,9 +31,9 @@
             {
                 ["@context"] = "https://schema.org",
                 ["@type"] = "WebPage",
-                ["name"] = "Termos de uso para profissionais",
+                ["name"] = C("terms.schema.webpage.name", C("terms.page.title", "Termos de uso para profissionais")),
                 ["url"] = $"{baseUrl}/termos-de-uso-profissionais",
-                ["description"] = "Termos de uso aplicaveis a profissionais cadastrados no ConsertaPraMim.",
+                ["description"] = C("terms.schema.webpage.description", "Termos de uso aplicaveis a profissionais cadastrados no ConsertaPraMim."),
                 ["inLanguage"] = "pt-BR"
             }
         };

@@ -632,7 +632,7 @@ END;
             [
                 new SqlParameter("@key", SqlDbType.NVarChar, 120) { Value = item.Key },
                 new SqlParameter("@value", SqlDbType.NVarChar, -1) { Value = item.Value },
-                new SqlParameter("@description", SqlDbType.NVarChar, 260) { Value = $"Conteudo editavel da chave {item.Key}" }
+                new SqlParameter("@description", SqlDbType.NVarChar, 260) { Value = SiteContentLabelHelper.BuildFriendlyName(item.Key, null) }
             ]);
             cmd.ExecuteNonQuery();
         }

@@ -1,55 +1,62 @@
 @model SupportPageViewModel
 @{
-    ViewData["Title"] = "Suporte";
-    ViewData["SeoTitle"] = "Central de suporte";
-    ViewData["MetaDescription"] = "Fale com o suporte do ConsertaPraMim e consulte a FAQ com respostas sobre cadastro, pagamentos, perfil e uso da plataforma.";
-    ViewData["MetaKeywords"] = "suporte, central de ajuda, FAQ, duvidas, ConsertaPraMim";
+    string C(string key, string fallback) => SiteContent.Get(key, fallback);
+
+    var pageTitle = C("support.meta.title", "Suporte");
+    ViewData["Title"] = pageTitle;
+    ViewData["SeoTitle"] = C("support.meta.seo_title", "Central de suporte");
+    ViewData["MetaDescription"] = C("support.meta.description", "Fale com o suporte do ConsertaPraMim e consulte a FAQ com respostas sobre cadastro, pagamentos, perfil e uso da plataforma.");
+    ViewData["MetaKeywords"] = C("support.meta.keywords", "suporte, central de ajuda, FAQ, duvidas, ConsertaPraMim");
     ViewData["CanonicalPath"] = "/suporte";
 }
 
 <section class="cpm-section">
     <div class="container-lg">
         <div class="text-center mb-4">
-            <h1 class="fw-bold">Central de suporte</h1>
+            <h1 class="fw-bold">@C("support.page.title", "Central de suporte")</h1>
             <p class="text-secondary-emphasis mb-0">
-                Envie sua solicitacao para nossa equipe e consulte respostas rapidas na FAQ.
+                @C("support.page.subtitle", "Envie sua solicitacao para nossa equipe e consulte respostas rapidas na FAQ.")
             </p>
         </div>
 
         @if (Model.IsSubmitted)
         {
+            var submittedName = string.IsNullOrWhiteSpace(Model.SubmittedName)
+                ? C("support.alert.success_default_name", "profissional")
+                : Model.SubmittedName;
+            var alertTemplate = C("support.alert.success_template", "Solicitacao recebida com sucesso, {name}! Nossa equipe retornara pelo e-mail informado.");
             <div class="alert alert-success mb-4" role="alert">
-                Solicitacao recebida com sucesso, @(string.IsNullOrWhiteSpace(Model.SubmittedName) ? "profissional" : Model.SubmittedName)! Nossa equipe retornara pelo e-mail informado.
+                @alertTemplate.Replace("{name}", submittedName, StringComparison.OrdinalIgnoreCase)
             </div>
         }
 
         <div class="row g-4">
             <div class="col-12 col-lg-6">
                 <div class="cpm-card cpm-form-card p-4 p-md-5 bg-white h-100">
-                    <h5 class="fw-bold mb-3">Formulario de suporte</h5>
+                    <h5 class="fw-bold mb-3">@C("support.form.title", "Formulario de suporte")</h5>
                     <form asp-controller="Home" asp-action="Support" method="post" novalidate>
                         @Html.AntiForgeryToken()
                         <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
 
                         <div class="mb-3">
-                            <label asp-for="Form.Name" class="form-label">Nome completo</label>
-                            <input asp-for="Form.Name" class="form-control" placeholder="Seu nome" />
+                            <label asp-for="Form.Name" class="form-label">@C("support.form.name.label", "Nome completo")</label>
+                            <input asp-for="Form.Name" class="form-control" placeholder="@C("support.form.name.placeholder", "Seu nome")" />
                             <span asp-validation-for="Form.Name" class="text-danger small"></span>
                         </div>
 
                         <div class="row g-3 mb-3">
                             <div class="col-12 col-md-7">
-                                <label asp-for="Form.Email" class="form-label">E-mail</label>
-                                <input asp-for="Form.Email" class="form-control" placeholder="voce@email.com" />
+                                <label asp-for="Form.Email" class="form-label">@C("support.form.email.label", "E-mail")</label>
+                                <input asp-for="Form.Email" class="form-control" placeholder="@C("support.form.email.placeholder", "voce@email.com")" />
                                 <span asp-validation-for="Form.Email" class="text-danger small"></span>
                             </div>
                             <div class="col-12 col-md-5">
-                                <label asp-for="Form.Phone" class="form-label">Telefone (opcional)</label>
+                                <label asp-for="Form.Phone" class="form-label">@C("support.form.phone.label", "Telefone (opcional)")</label>
                                 <input
                                     asp-for="Form.Phone"
                                     id="supportPhoneInput"
                                     class="form-control"
-                                    placeholder="(00) 90000-0000"
+                                    placeholder="@C("support.form.phone.placeholder", "(00) 90000-0000")"
                                     inputmode="numeric"
                                     maxlength="15" />
                                 <span asp-validation-for="Form.Phone" class="text-danger small"></span>
@@ -57,9 +64,9 @@
                         </div>
 
                         <div class="mb-3">
-                            <label asp-for="Form.Category" class="form-label">Categoria</label>
+                            <label asp-for="Form.Category" class="form-label">@C("support.form.category.label", "Categoria")</label>
                             <select asp-for="Form.Category" class="form-select">
-                                <option value="">Selecione</option>
+                                <option value="">@C("support.form.category.option_select", "Selecione")</option>
                                 @foreach (var category in Model.CategoryOptions)
                                 {
                                     <option value="@category">@category</option>
@@ -69,25 +76,25 @@
                         </div>
 
                         <div class="mb-3">
-                            <label asp-for="Form.Subject" class="form-label">Assunto</label>
-                            <input asp-for="Form.Subject" class="form-control" placeholder="Ex: Duvida sobre avaliacao de cliente" />
+                            <label asp-for="Form.Subject" class="form-label">@C("support.form.subject.label", "Assunto")</label>
+                            <input asp-for="Form.Subject" class="form-control" placeholder="@C("support.form.subject.placeholder", "Ex: Duvida sobre avaliacao de cliente")" />
                             <span asp-validation-for="Form.Subject" class="text-danger small"></span>
                         </div>
 
                         <div class="mb-3">
-                            <label asp-for="Form.Message" class="form-label">Mensagem</label>
-                            <textarea asp-for="Form.Message" class="form-control" rows="5" placeholder="Descreva sua solicitacao com o maximo de detalhes possivel."></textarea>
+                            <label asp-for="Form.Message" class="form-label">@C("support.form.message.label", "Mensagem")</label>
+                            <textarea asp-for="Form.Message" class="form-control" rows="5" placeholder="@C("support.form.message.placeholder", "Descreva sua solicitacao com o maximo de detalhes possivel.")"></textarea>
                             <span asp-validation-for="Form.Message" class="text-danger small"></span>
                         </div>
 
-                        <button type="submit" class="btn cpm-btn-primary w-100">Enviar solicitacao</button>
+                        <button type="submit" class="btn cpm-btn-primary w-100">@C("support.form.submit", "Enviar solicitacao")</button>
                     </form>
                 </div>
             </div>
 
             <div class="col-12 col-lg-6">
                 <div class="cpm-card cpm-form-card p-4 p-md-5 bg-white h-100">
-                    <h5 class="fw-bold mb-3">FAQ - Perguntas frequentes</h5>
+                    <h5 class="fw-bold mb-3">@C("support.faq.title", "FAQ - Perguntas frequentes")</h5>
                     <div class="accordion" id="supportFaqAccordion">
                         @for (var i = 0; i < Model.FaqItems.Count; i++)
                         {
@@ -138,9 +145,9 @@
             {
                 ["@context"] = "https://schema.org",
                 ["@type"] = "WebPage",
-                ["name"] = "Central de suporte",
+                ["name"] = C("support.schema.webpage.name", C("support.page.title", "Central de suporte")),
                 ["url"] = $"{baseUrl}/suporte",
-                ["description"] = "Central de suporte com formulario e perguntas frequentes.",
+                ["description"] = C("support.schema.webpage.description", "Central de suporte com formulario e perguntas frequentes."),
                 ["inLanguage"] = "pt-BR"
             },
             new Dictionary<string, object?>

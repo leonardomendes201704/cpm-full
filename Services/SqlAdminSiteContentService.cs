@@ -159,35 +159,26 @@ CREATE TABLE dbo.{TablePrefix}site_contents
                 createCommand.ExecuteNonQuery();
             }
 
-            using (var countCommand = connection.CreateCommand())
+            foreach (var item in _seedRepository.GetSiteContents())
             {
-                countCommand.Transaction = transaction;
-                countCommand.CommandText = $"""
-SELECT COUNT(1)
-FROM dbo.{TablePrefix}site_contents;
+                using var insertCommand = connection.CreateCommand();
+                insertCommand.Transaction = transaction;
+                insertCommand.CommandText = $"""
+IF NOT EXISTS (SELECT 1 FROM dbo.{TablePrefix}site_contents WHERE [Key] = @key)
+BEGIN
+    INSERT INTO dbo.{TablePrefix}site_contents
+    ([Key], [Value], Description, IsActive, CreatedAt)
+    VALUES
+    (@key, @value, @description, 1, SYSUTCDATETIME());
+END;
 """;
-                var count = Convert.ToInt32(countCommand.ExecuteScalar());
-                if (count == 0)
-                {
-                    foreach (var item in _seedRepository.GetSiteContents())
-                    {
-                        using var insertCommand = connection.CreateCommand();
-                        insertCommand.Transaction = transaction;
-                        insertCommand.CommandText = $"""
-INSERT INTO dbo.{TablePrefix}site_contents
-([Key], [Value], Description, IsActive, CreatedAt)
-VALUES
-(@key, @value, @description, 1, SYSUTCDATETIME());
-""";
-                        insertCommand.Parameters.AddRange(
-                        [
-                            new SqlParameter("@key", SqlDbType.NVarChar, 120) { Value = item.Key },
-                            new SqlParameter("@value", SqlDbType.NVarChar, -1) { Value = item.Value },
-                            new SqlParameter("@description", SqlDbType.NVarChar, 260) { Value = SiteContentLabelHelper.BuildFriendlyName(item.Key, null) }
-                        ]);
-                        insertCommand.ExecuteNonQuery();
-                    }
-                }
+                insertCommand.Parameters.AddRange(
+                [
+                    new SqlParameter("@key", SqlDbType.NVarChar, 120) { Value = item.Key },
+                    new SqlParameter("@value", SqlDbType.NVarChar, -1) { Value = item.Value },
+                    new SqlParameter("@description", SqlDbType.NVarChar, 260) { Value = SiteContentLabelHelper.BuildFriendlyName(item.Key, null) }
+                ]);
+                insertCommand.ExecuteNonQuery();
             }
 
             transaction.Commit();

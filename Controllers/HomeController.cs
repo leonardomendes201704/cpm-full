@@ -23,8 +23,7 @@ public class HomeController : Controller
     {
         return View(new HomePageViewModel
         {
-            Categories = _repository.GetCategories(),
-            SiteContent = _repository.GetSiteContents()
+            Categories = _repository.GetCategories()
         });
     }
 
@@ -150,7 +149,7 @@ public class HomeController : Controller
     {
         return View(new RegisterProfessionalSuccessViewModel
         {
-            ProfessionalName = string.IsNullOrWhiteSpace(name) ? "Profissional" : name.Trim()
+            ProfessionalName = string.IsNullOrWhiteSpace(name) ? string.Empty : name.Trim()
         });
     }
 
